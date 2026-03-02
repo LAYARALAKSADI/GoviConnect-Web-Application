@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up | Govi Connect</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #27ae60;
+      --primary-light: #2ecc71;
+      --primary-dark: #219653;
+      --secondary: #e67e22;
+      --secondary-light: #f39c12;
+      --secondary-dark: #d35400;
+      --text: #2c3e50;
+      --text-light: #7f8c8d;
+      --background: #ecf0f1;
+      --white: #ffffff;
+      --error: #e74c3c;
+      --border: #bdc3c7;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      display: flex;
+      width: 100%;
+      max-width: 1000px;
+      background-color: var(--white);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    
+    .left-panel {
+      flex: 1;
+      background: url('https://bmkltsly13vb.compat.objectstorage.ap-mumbai-1.oraclecloud.com/cdn.dailymirror.lk/assets/uploads/image_086a3c18ce.jpg');
+      background-size: cover;
+      background-position: center;
+      color: var(--text);
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+    
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.85);
+    }
+    
+    .left-content {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .left-panel h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    
+    .left-panel p {
+      font-size: 18px;
+      margin-bottom: 30px;
+      line-height: 1.8;
+      color: var(--text-light);
+    }
+    
+    .features {
+      list-style: none;
+      margin-top: 30px;
+    }
+    
+    .features li {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .features i {
+      margin-right: 10px;
+      color: var(--secondary);
+      font-size: 20px;
+    }
+    
+    .signup-container {
+      flex: 1;
+      padding: 40px 30px;
+      position: relative;
+    }
+    
+    .signup-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+    }
+    
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--primary);
+      font-size: 24px;
+      font-weight: 700;
+    }
+    
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--text);
+      font-size: 28px;
+      font-weight: 600;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background-color: #f8f9fa;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(39, 174, 96, 0.2);
+      background-color: var(--white);
+    }
+    
+    .password-container {
+      position: relative;
+    }
+    
+    .toggle-password {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-light);
+    }
+    
+    .error-message {
+      color: var(--error);
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+    }
+    
+    button[type="submit"] {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+    
+    button[type="submit"]:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    button[type="submit"]:disabled {
+      background-color: var(--border);
+      cursor: not-allowed;
+    }
+    
+    .signin-link {
+      text-align: center;
+      margin-top: 25px;
+      color: var(--text-light);
+    }
+    
+    .signin-link a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .signin-link a:hover {
+      text-decoration: underline;
+    }
+    
+    .role-description {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 10px;
+      font-size: 14px;
+      display: none;
+      border-left: 4px solid var(--secondary);
+    }
+    
+    .role-description.active {
+      display: block;
+    }
+    
+    .home-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow);
+      z-index: 10;
+    }
+    
+    .home-button:hover {
+      background-color: var(--secondary-dark);
+      transform: scale(1.05);
+    }
+
+    /* Loading animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Message styles */
+    .success-message {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 12px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      border: 1px solid #c3e6cb;
+      display: none;
+    }
+    
+    .error-message-global {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 12px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      border: 1px solid #f5c6cb;
+      display: none;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      
+      .left-panel {
+        padding: 30px 20px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      
+      .signup-container {
+        padding: 30px 20px;
+      }
+      
+      h2 {
+        font-size: 24px;
+      }
+      
+      .home-button {
+        top: 10px;
+        left: 10px;
+        width: 40px;
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="home-button" onclick="window.location.href='index.html'">
+    <i class="fas fa-home"></i>
+  </button>
+  
+  <div class="container">
+    <div class="left-panel">
+      <div class="left-content">
+        <h1>Join Govi Connect Today</h1>
+        <p>Connect farmers and buyers in a seamless agricultural marketplace. Grow your business with our platform.</p>
+        
+        <ul class="features">
+          <li><i class="fas fa-check-circle"></i> Direct connection between farmers and buyers</li>
+          <li><i class="fas fa-check-circle"></i> Fair pricing for agricultural products</li>
+          <li><i class="fas fa-check-circle"></i> Secure payment processing</li>
+          <li><i class="fas fa-check-circle"></i> Real-time market insights</li>
+          <li><i class="fas fa-check-circle"></i> Logistics and delivery support</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="signup-container">
+      <div class="logo">
+        <i class="fas fa-leaf"></i> Govi Connect
+      </div>
+      <h2>Create Your Account</h2>
+
+      <div class="success-message" id="successMessage"></div>
+      <div class="error-message-global" id="errorMessage"></div>
+      
+      <form id="signupForm">
+        <div class="form-group">
+          <label for="role">Select Role</label>
+          <select id="role" required>
+            <option value="">--Select Your Role--</option>
+            <option value="farmer">Farmer</option>
+            <option value="buyer">Buyer</option>
+          </select>
+          <div id="farmer-description" class="role-description">
+            <strong>Farmer:</strong> List your agricultural products, connect with buyers, and grow your business.
+          </div>
+          <div id="buyer-description" class="role-description">
+            <strong>Buyer:</strong> Find quality agricultural products directly from farmers at competitive prices.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" placeholder="Enter your full name" required />
+          <div class="error-message" id="name-error">Please enter a valid name (at least 2 characters)</div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="Enter your email" required />
+          <div class="error-message" id="email-error">Please enter a valid email address</div>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="Enter your phone number" required />
+          <div class="error-message" id="phone-error">Please enter a valid phone number</div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="password-container">
+            <input type="password" id="password" placeholder="Create a strong password (min. 6 characters)" required />
+            <button type="button" class="toggle-password" id="togglePassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="error-message" id="password-error">Password must be at least 6 characters</div>
+        </div>
+
+        <button type="submit" id="signupBtn">
+          <span id="signupText">Create Account</span>
+          <span id="signupLoading" style="display: none;">
+            <span class="loading"></span> Creating Account...
+          </span>
+        </button>
+
+        <div class="signin-link">
+          <p>Already have an account? <a href="select-login.html">Sign In</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAJBaIq9oElhG0iMbAos0TiWwUQLiADg7g",
+      authDomain: "goviconnect-105c9.firebaseapp.com",
+      projectId: "goviconnect-105c9",
+      storageBucket: "goviconnect-105c9.firebasestorage.app",
+      messagingSenderId: "173017898873",
+      appId: "1:173017898873:web:eb3ad5936aabe5cbc119a8"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('signupForm');
+      const roleSelect = document.getElementById('role');
+      const farmerDescription = document.getElementById('farmer-description');
+      const buyerDescription = document.getElementById('buyer-description');
+      const togglePassword = document.getElementById('togglePassword');
+      const passwordInput = document.getElementById('password');
+      const signupBtn = document.getElementById('signupBtn');
+      const signupText = document.getElementById('signupText');
+      const signupLoading = document.getElementById('signupLoading');
+      const successMessage = document.getElementById('successMessage');
+      const errorMessage = document.getElementById('errorMessage');
+      
+      // Show message function
+      function showMessage(message, type = 'error') {
+        if (type === 'success') {
+          successMessage.textContent = message;
+          successMessage.style.display = 'block';
+          errorMessage.style.display = 'none';
+        } else {
+          errorMessage.textContent = message;
+          errorMessage.style.display = 'block';
+          successMessage.style.display = 'none';
+        }
+        
+        // Auto hide after 5 seconds
+        setTimeout(() => {
+          successMessage.style.display = 'none';
+          errorMessage.style.display = 'none';
+        }, 5000);
+      }
+      
+      // Role selection description
+      roleSelect.addEventListener('change', function() {
+        farmerDescription.classList.remove('active');
+        buyerDescription.classList.remove('active');
+        
+        if (this.value === 'farmer') {
+          farmerDescription.classList.add('active');
+        } else if (this.value === 'buyer') {
+          buyerDescription.classList.add('active');
+        }
+      });
+      
+      // Toggle password visibility
+      togglePassword.addEventListener('click', function() {
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+        } else {
+          passwordInput.type = 'password';
+          this.innerHTML = '<i class="fas fa-eye"></i>';
+        }
+      });
+      
+      // Form validation and Firebase registration
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        let isValid = true;
+        
+        // Validate name
+        const name = document.getElementById('name');
+        const nameError = document.getElementById('name-error');
+        if (name.value.trim().length < 2) {
+          nameError.style.display = 'block';
+          name.style.borderColor = 'var(--error)';
+          isValid = false;
+        } else {
+          nameError.style.display = 'none';
+          name.style.borderColor = 'var(--border)';
+        }
+        
+        // Validate email
+        const email = document.getElementById('email');
+        const emailError = document.getElementById('email-error');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email.value)) {
+          emailError.style.display = 'block';
+          email.style.borderColor = 'var(--error)';
+          isValid = false;
+        } else {
+          emailError.style.display = 'none';
+          email.style.borderColor = 'var(--border)';
+        }
+        
+        // Validate phone - Enhanced version
+        const phone = document.getElementById('phone');
+        const phoneError = document.getElementById('phone-error');
+        const phoneValue = phone.value.trim();
+
+        // Remove all non-digits for length check
+        const phoneDigits = phoneValue.replace(/\D/g, '');
+
+        // Check if we have enough digits and basic format
+        if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+          phoneError.style.display = 'block';
+          phoneError.textContent = 'Phone number should be 10-15 digits';
+          phone.style.borderColor = 'var(--error)';
+          isValid = false;
+        } else if (!/^[0-9\s\-\+\(\)\.]+$/.test(phoneValue)) {
+          phoneError.style.display = 'block';
+          phoneError.textContent = 'Please enter a valid phone number';
+          phone.style.borderColor = 'var(--error)';
+          isValid = false;
+        } else {
+          phoneError.style.display = 'none';
+          phone.style.borderColor = 'var(--border)';
+        }
+        
+        // Validate password
+        const password = document.getElementById('password');
+        const passwordError = document.getElementById('password-error');
+        if (password.value.length < 6) {
+          passwordError.style.display = 'block';
+          password.style.borderColor = 'var(--error)';
+          isValid = false;
+        } else {
+          passwordError.style.display = 'none';
+          password.style.borderColor = 'var(--border)';
+        }
+        
+        // Validate role
+        if (roleSelect.value === '') {
+          roleSelect.style.borderColor = 'var(--error)';
+          isValid = false;
+        } else {
+          roleSelect.style.borderColor = 'var(--border)';
+        }
+        
+        // If form is valid, register with Firebase
+        if (isValid) {
+          try {
+            // Show loading state
+            signupText.style.display = 'none';
+            signupLoading.style.display = 'inline';
+            signupBtn.disabled = true;
+            
+            console.log('Starting Firebase registration...');
+            
+            // Firebase authentication - create user
+            const userCredential = await auth.createUserWithEmailAndPassword(email.value, password.value);
+            const user = userCredential.user;
+            
+            console.log('✅ Firebase Auth user created:', user.uid);
+            
+            // Prepare user data for Firestore
+            const userData = {
+              name: name.value.trim(),
+              email: email.value,
+              phone: phone.value,
+              role: roleSelect.value,
+              status: 'active',
+              createdAt: new Date(),
+              updatedAt: new Date()
+            };
+            
+            console.log('📝 User data prepared:', userData);
+            
+            // FIXED: Save user data to Firestore based on role - USING CONSISTENT COLLECTION
+            if (roleSelect.value === 'farmer') {
+              await db.collection('users').doc(user.uid).set({
+                ...userData,
+                userType: 'farmer'
+              });
+              console.log('✅ Farmer data saved to Firestore');
+              showMessage('Farmer account created successfully! Redirecting to login page...', 'success');
+              setTimeout(() => {
+                window.location.href = 'farmer/farmer-login.html';
+              }, 2000);
+            } else if (roleSelect.value === 'buyer') {
+              await db.collection('users').doc(user.uid).set({
+                ...userData,
+                userType: 'buyer'
+              });
+              console.log('✅ Buyer data saved to Firestore');
+              showMessage('Buyer account created successfully! Redirecting to login page...', 'success');
+              setTimeout(() => {
+                window.location.href = 'buyer/buyer-login.html';
+              }, 2000);
+            }
+            
+          } catch (error) {
+            // Handle registration errors
+            console.error('❌ Registration error:', error);
+            
+            let errorMessageText = 'Registration failed. ';
+            switch (error.code) {
+              case 'auth/email-already-in-use':
+                errorMessageText = 'This email is already registered. Please use a different email or sign in.';
+                break;
+              case 'auth/invalid-email':
+                errorMessageText = 'Invalid email address format.';
+                break;
+              case 'auth/weak-password':
+                errorMessageText = 'Password is too weak. Please use a stronger password.';
+                break;
+              case 'auth/network-request-failed':
+                errorMessageText = 'Network error. Please check your internet connection.';
+                break;
+              case 'auth/operation-not-allowed':
+                errorMessageText = 'Email/password accounts are not enabled. Please contact support.';
+                break;
+              default:
+                errorMessageText = 'Registration failed. Please try again.';
+            }
+            
+            showMessage(errorMessageText);
+            
+            // Reset button
+            signupText.style.display = 'inline';
+            signupLoading.style.display = 'none';
+            signupBtn.disabled = false;
+          }
+        }
+      });
+      
+      // Real-time validation
+      const inputs = form.querySelectorAll('input, select');
+      inputs.forEach(input => {
+        input.addEventListener('input', function() {
+          if (this.style.borderColor === 'var(--error)') {
+            this.style.borderColor = 'var(--border)';
+            const errorElement = document.getElementById(this.id + '-error');
+            if (errorElement) {
+              errorElement.style.display = 'none';
+            }
+          }
+          // Hide global messages when user starts typing
+          successMessage.style.display = 'none';
+          errorMessage.style.display = 'none';
+        });
+      });
+
+      // FIXED: Check if user is already logged in - USING CONSISTENT COLLECTION
+      auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          try {
+            // Check if user exists in users collection as farmer
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (userDoc.exists && userDoc.data().userType === "farmer") {
+              window.location.href = 'farmer/farmer-profile.html';
+              return;
+            }
+            
+            // Check if user exists in users collection as buyer
+            if (userDoc.exists && userDoc.data().userType === "buyer") {
+              window.location.href = 'buyer/buyer-dashboard.html';
+              return;
+            }
+          } catch (error) {
+            console.error('Error checking user status:', error);
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Products</title>
+    <link rel="stylesheet" href="css/buyer-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Available Products</h1>
+            <div class="header-actions">
+                <input type="text" id="searchInput" placeholder="Search products...">
+                <button onclick="toggleFilters()" class="btn-secondary">Filters</button>
+                <a href="shopping-cart.html" class="cart-link">Cart (<span id="cartCount">0</span>)</a>
+                <a href="buyer-dashboard.html" class="btn-secondary">Back to Dashboard</a>
+            </div>
+        </header>
+
+        <div id="filterSection" class="filters hidden">
+            <div class="filter-group">
+                <label>Category:</label>
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="vegetables">Vegetables</option>
+                    <option value="fruits">Fruits</option>
+                    <option value="grains">Grains</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Price Range:</label>
+                <input type="number" id="minPrice" placeholder="Min Price">
+                <input type="number" id="maxPrice" placeholder="Max Price">
+            </div>
+            <button onclick="applyFilters()" class="btn-primary">Apply Filters</button>
+        </div>
+
+        <div id="productsGrid" class="products-grid">
+            <p class="loading">Loading products...</p>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+<script>
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyAJBaIq9oElhG0iMbAos0TiWwUQLiADg7g",
+        authDomain: "goviconnect-105c9.firebasestorage.app",
+        projectId: "goviconnect-105c9",
+        storageBucket: "goviconnect-105c9.firebasestorage.app",
+        messagingSenderId: "173017898873",
+        appId: "1:173017898873:web:eb3ad5936aabe5cbc119a8"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let allProducts = [];
+    let cart = JSON.parse(localStorage.getItem('buyerCart')) || [];
+    let productsLoaded = false;
+    // Add this to every buyer page - USER TYPE PROTECTION
+auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        // Check if user is actually a buyer
+        try {
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            if (userDoc.exists) {
+                const userData = userDoc.data();
+                if (userData.userType !== "buyer") {
+                    // Redirect to appropriate portal
+                    if (userData.userType === "farmer") {
+                        window.location.href = 'farmer-dashboard.html';
+                    } else {
+                        await auth.signOut();
+                        window.location.href = 'buyer-login.html';
+                    }
+                }
+                // User is buyer, continue loading page
+            } else {
+                // No user document, redirect to login
+                await auth.signOut();
+                window.location.href = 'buyer-login.html';
+            }
+        } catch (error) {
+            console.error('Error checking user type:', error);
+            window.location.href = 'buyer-login.html';
+        }
+    } else {
+        // No user logged in, redirect to login
+        window.location.href = 'buyer-login.html';
+    }
+});
+    // Single authentication check
+    auth.onAuthStateChanged((user) => {
+        console.log('Auth state changed - Products Page');
+        if (user) {
+            if (!productsLoaded) {
+                loadProducts();
+                updateCartCount();
+            }
+        } else {
+            window.location.href = 'buyer-login.html';
+        }
+    });
+
+    // Load products - FIXED VERSION
+    async function loadProducts() {
+        if (productsLoaded) {
+            console.log('Products already loaded, skipping...');
+            return;
+        }
+
+        try {
+            console.log('Loading products...');
+            productsLoaded = true;
+
+            const productsSnapshot = await db.collection('products')
+                .where('status', '==', 'approved')
+                .get();
+
+            allProducts = [];
+            productsSnapshot.forEach((doc) => {
+                allProducts.push({ id: doc.id, ...doc.data() });
+            });
+
+            console.log('Products loaded successfully:', allProducts.length);
+            displayProducts(allProducts);
+            
+        } catch (error) {
+            console.error("Error loading products:", error);
+            document.getElementById('productsGrid').innerHTML = '<p class="loading">Error loading products</p>';
+            productsLoaded = false;
+        }
+    }
+
+    // Display products - UPDATED TO HANDLE BASE64 IMAGES
+    function displayProducts(products) {
+        const grid = document.getElementById('productsGrid');
+        
+        if (products.length === 0) {
+            grid.innerHTML = '<p class="loading">No products available</p>';
+            return;
+        }
+
+        console.log('Displaying', products.length, 'products');
+        grid.innerHTML = products.map(product => {
+            const productName = product.name || 'Unnamed Product';
+            const productPrice = product.price || '0';
+            const productQuantity = product.quantity || '0';
+            
+            // Handle both 'image' (Base64 from farmer) and 'imageUrl' fields
+            const imageData = product.image || product.imageUrl;
+            let imageSrc = 'images/placeholder.jpg';
+            
+            if (imageData) {
+                if (imageData.startsWith('data:image')) {
+                    // Base64 image from farmer
+                    imageSrc = imageData;
+                    console.log('Using Base64 image for:', productName);
+                } else if (imageData.startsWith('http')) {
+                    // HTTP URL
+                    imageSrc = imageData;
+                    console.log('Using HTTP image for:', productName);
+                } else {
+                    console.log('Invalid image format for:', productName, imageData);
+                }
+            } else {
+                console.log('No image data for:', productName);
+            }
+            
+            return `
+                <div class="product-card">
+                    <img src="${imageSrc}" 
+                         alt="${productName}" 
+                         onerror="console.log('Image failed to load: ${productName}'); this.src='images/placeholder.jpg';"
+                         style="height: 200px; object-fit: cover; width: 100%;">
+                    <div class="product-info">
+                        <h3>${productName}</h3>
+                        <p class="price">Rs. ${productPrice}/kg</p>
+                        <p class="quantity">Available: ${productQuantity} kg</p>
+                        <button onclick="addToCart('${product.id}')" class="btn-primary">Add to Cart</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Add to cart
+    function addToCart(productId) {
+        const product = allProducts.find(p => p.id === productId);
+        if (!product) {
+            alert('Product not found!');
+            return;
+        }
+
+        const existingItem = cart.find(item => item.productId === productId);
+        
+        if (existingItem) {
+            if (existingItem.quantity + 1 > product.quantity) {
+                alert('Not enough quantity available!');
+                return;
+            }
+            existingItem.quantity += 1;
+        } else {
+            cart.push({
+                productId: productId,
+                name: product.name,
+                price: product.price,
+                quantity: 1,
+                imageUrl: product.image || product.imageUrl, // Store both image types
+                farmerId: product.farmerId
+            });
+        }
+
+        localStorage.setItem('buyerCart', JSON.stringify(cart));
+        updateCartCount();
+        alert('Product added to cart!');
+    }
+
+    // Update cart count
+    function updateCartCount() {
+        const cartCount = document.getElementById('cartCount');
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        cartCount.textContent = totalItems;
+    }
+
+    // Filter functions
+    function applyFilters() {
+        const category = document.getElementById('categoryFilter').value;
+        const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+        const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+        const filteredProducts = allProducts.filter(product => {
+            const matchesCategory = !category || product.category === category;
+            const matchesPrice = product.price >= minPrice && product.price <= maxPrice;
+            const matchesSearch = !searchTerm || 
+                (product.name && product.name.toLowerCase().includes(searchTerm));
+
+            return matchesCategory && matchesPrice && matchesSearch;
+        });
+
+        console.log('Filtered products:', filteredProducts.length);
+        displayProducts(filteredProducts);
+    }
+
+    function toggleFilters() {
+        const filterSection = document.getElementById('filterSection');
+        filterSection.classList.toggle('hidden');
+    }
+
+    // Make functions global
+    window.addToCart = addToCart;
+    window.applyFilters = applyFilters;
+    window.toggleFilters = toggleFilters;
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM Content Loaded - Products Page');
+        
+        // Set up event listeners for filters
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const minPrice = document.getElementById('minPrice');
+        const maxPrice = document.getElementById('maxPrice');
+
+        if (searchInput) searchInput.addEventListener('input', applyFilters);
+        if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
+        if (minPrice) minPrice.addEventListener('change', applyFilters);
+        if (maxPrice) maxPrice.addEventListener('change', applyFilters);
+
+        // Check if user is already logged in
+        const user = auth.currentUser;
+        if (user && !productsLoaded) {
+            console.log('User already logged in, loading products...');
+            loadProducts();
+            updateCartCount();
+        }
+    });
+</script>
+</body>
+</html>

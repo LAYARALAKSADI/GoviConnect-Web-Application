@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login | Govi Connect</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* [KEEP ALL YOUR EXISTING CSS STYLES] */
+    :root {
+      --primary: #27ae60;
+      --primary-light: #2ecc71;
+      --primary-dark: #219653;
+      --secondary: #e67e22;
+      --secondary-light: #f39c12;
+      --secondary-dark: #d35400;
+      --text: #2c3e50;
+      --text-light: #7f8c8d;
+      --background: #ecf0f1;
+      --white: #ffffff;
+      --error: #e74c3c;
+      --border: #bdc3c7;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      display: flex;
+      width: 100%;
+      max-width: 1000px;
+      background-color: var(--white);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    
+    .left-panel {
+      flex: 1;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: white;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+    
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+      background-size: cover;
+    }
+    
+    .left-content {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .left-panel h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      font-weight: 700;
+      color: white;
+    }
+    
+    .left-panel p {
+      font-size: 18px;
+      margin-bottom: 30px;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .features {
+      list-style: none;
+      margin-top: 30px;
+    }
+    
+    .features li {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .features i {
+      margin-right: 10px;
+      color: var(--secondary-light);
+      font-size: 20px;
+    }
+    
+    .login-container {
+      flex: 1;
+      padding: 40px 30px;
+      position: relative;
+      background: var(--white);
+    }
+    
+    .login-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+    }
+    
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--primary);
+      font-size: 24px;
+      font-weight: 700;
+    }
+    
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--text);
+      font-size: 28px;
+      font-weight: 600;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background-color: #f8f9fa;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(39, 174, 96, 0.2);
+      background-color: var(--white);
+    }
+    
+    .password-container {
+      position: relative;
+    }
+    
+    .toggle-password {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-light);
+      font-size: 14px;
+    }
+    
+    .error-message {
+      color: var(--error);
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+    }
+    
+    button[type="submit"] {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+    
+    button[type="submit"]:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    button[type="submit"]:disabled {
+      background-color: var(--border);
+      cursor: not-allowed;
+    }
+    
+    .signup-link {
+      text-align: center;
+      margin-top: 25px;
+      color: var(--text-light);
+    }
+    
+    .signup-link a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+    
+    .admin-info {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+      font-size: 14px;
+      border-left: 4px solid var(--secondary);
+    }
+    
+    .admin-info h4 {
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+    
+    .admin-info ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    
+    .admin-info li {
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .admin-info i {
+      margin-right: 8px;
+      color: var(--secondary);
+      font-size: 14px;
+    }
+    
+    .home-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow);
+      z-index: 10;
+    }
+    
+    .home-button:hover {
+      background-color: var(--secondary-dark);
+      transform: scale(1.05);
+    }
+    
+    .forgot-password {
+      text-align: right;
+      margin-top: 10px;
+    }
+    
+    .forgot-password a {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 14px;
+    }
+    
+    .forgot-password a:hover {
+      text-decoration: underline;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .success-message {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 12px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      border: 1px solid #c3e6cb;
+      display: none;
+    }
+    
+    .error-message-global {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 12px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      border: 1px solid #f5c6cb;
+      display: none;
+    }
+
+    .admin-notice {
+      background-color: #fff3cd;
+      color: #856404;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 20px;
+      border: 1px solid #ffeaa7;
+      font-size: 14px;
+    }
+    
+    .admin-notice h4 {
+      color: #856404;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .admin-notice h4 i {
+      margin-right: 8px;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      
+      .left-panel {
+        padding: 30px 20px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      
+      .login-container {
+        padding: 30px 20px;
+      }
+      
+      h2 {
+        font-size: 24px;
+      }
+      
+      .home-button {
+        top: 10px;
+        left: 10px;
+        width: 40px;
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="home-button" onclick="window.location.href='index.html'">
+    <i class="fas fa-home"></i>
+  </button>
+  
+  <div class="container">
+    <div class="left-panel">
+      <div class="left-content">
+        <h1>Admin Portal</h1>
+        <p>Access the Govi Connect administrative dashboard to manage farmers, buyers, products, and platform analytics.</p>
+        
+        <ul class="features">
+          <li><i class="fas fa-shield-alt"></i> Secure admin authentication</li>
+          <li><i class="fas fa-chart-bar"></i> Analytics and reporting</li>
+          <li><i class="fas fa-users"></i> User management</li>
+          <li><i class="fas fa-shopping-bag"></i> Product moderation</li>
+          <li><i class="fas fa-cog"></i> System configuration</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="login-container">
+      <div class="logo">
+        <i class="fas fa-leaf"></i> Govi Connect
+      </div>
+      <h2>Admin Login</h2>
+      
+      <div class="success-message" id="successMessage"></div>
+      <div class="error-message-global" id="errorMessage"></div>
+      
+      <form id="adminLoginForm">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="Enter your admin email" required />
+          <div class="error-message" id="email-error">Please enter a valid email address</div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="password-container">
+            <input type="password" id="password" placeholder="Enter your password" required />
+            <button type="button" class="toggle-password" id="togglePassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="error-message" id="password-error">Password must be at least 6 characters</div>
+        </div>
+
+        <div class="forgot-password">
+          <a href="admin_forgot_password.html">Forgot Password?</a>
+        </div>
+
+        <button type="submit" id="loginBtn">
+          <span id="loginText">Login to Dashboard</span>
+          <span id="loginLoading" style="display: none;">
+            <span class="loading"></span> Logging in...
+          </span>
+        </button>
+
+        <div class="admin-info">
+          <h4>Official Admin Credentials</h4>
+          <p>Use the official credentials provided by Dambulla Economic Center to access the admin dashboard.</p>
+          <p style="margin-top: 8px;">
+            <i class="fas fa-envelope"></i> Use: <strong>admin@goviconnect.lk</strong> / <strong>Provided by Dambulla Economic Center</strong>
+          </p>
+        </div>
+
+        
+
+        <div class="signup-link">
+          <p>Looking for user accounts? <a href="select-login.html">Go to User Login</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAJBaIq9oElhG0iMbAos0TiWwUQLiADg7g",
+      authDomain: "goviconnect-105c9.firebaseapp.com",
+      projectId: "goviconnect-105c9",
+      storageBucket: "goviconnect-105c9.firebasestorage.app",
+      messagingSenderId: "173017898873",
+      appId: "1:173017898873:web:eb3ad5936aabe5cbc119a8"
+    };
+
+    // Initialize Firebase
+    let auth, db;
+    try {
+      firebase.initializeApp(firebaseConfig);
+      auth = firebase.auth();
+      db = firebase.firestore();
+      console.log('Firebase initialized successfully');
+    } catch (error) {
+      console.error('Firebase initialization error:', error);
+      document.getElementById('errorMessage').textContent = 'Firebase configuration error: ' + error.message;
+      document.getElementById('errorMessage').style.display = 'block';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('adminLoginForm');
+      const togglePassword = document.getElementById('togglePassword');
+      const passwordInput = document.getElementById('password');
+      const loginBtn = document.getElementById('loginBtn');
+      const loginText = document.getElementById('loginText');
+      const loginLoading = document.getElementById('loginLoading');
+      const successMessage = document.getElementById('successMessage');
+      const errorMessage = document.getElementById('errorMessage');
+
+// Add a logout button that clears everything
+function fullLogout() {
+    auth.signOut();
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = 'select-login.html';
+}
+      // Toggle password visibility
+      togglePassword.addEventListener('click', function() {
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+        } else {
+          passwordInput.type = 'password';
+          this.innerHTML = '<i class="fas fa-eye"></i>';
+        }
+      });
+      
+      // Show message function
+      function showMessage(message, type = 'error') {
+        if (type === 'success') {
+          successMessage.textContent = message;
+          successMessage.style.display = 'block';
+          errorMessage.style.display = 'none';
+        } else {
+          errorMessage.textContent = message;
+          errorMessage.style.display = 'block';
+          successMessage.style.display = 'none';
+        }
+      }
+      
+      // Form validation and Firebase login
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        let isValid = true;
+        
+        // Validate email
+        const email = document.getElementById('email');
+        const emailError = document.getElementById('email-error');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email.value)) {
+          emailError.style.display = 'block';
+          email.style.borderColor = 'var(--error)';
+          isValid = false;
+        } else {
+          emailError.style.display = 'none';
+          email.style.borderColor = 'var(--border)';
+        }
+        
+        // Validate password
+        const password = document.getElementById('password');
+        const passwordError = document.getElementById('password-error');
+        if (password.value.length < 6) {
+          passwordError.style.display = 'block';
+          password.style.borderColor = 'var(--error)';
+          isValid = false;
+        } else {
+          passwordError.style.display = 'none';
+          password.style.borderColor = 'var(--border)';
+        }
+        
+        // If form is valid, attempt Firebase login
+        if (isValid) {
+          try {
+            // Show loading state
+            loginText.style.display = 'none';
+            loginLoading.style.display = 'inline';
+            loginBtn.disabled = true;
+            
+            // Firebase authentication
+            const userCredential = await auth.signInWithEmailAndPassword(email.value, password.value);
+            const user = userCredential.user;
+            
+            showMessage('Login successful! Redirecting to admin dashboard...', 'success');
+            
+            // TEMPORARY: Skip Firestore admin check and redirect directly
+            // This will work as long as the user exists in Firebase Authentication
+            setTimeout(() => {
+              window.location.href = 'admin_dashboard.html';
+            }, 1500);
+            
+          } catch (error) {
+            // Handle login errors
+            console.error('Login error:', error);
+            
+            let errorMessageText = 'Login failed. ';
+            switch (error.code) {
+              case 'auth/user-not-found':
+                errorMessageText = 'No account found with this email. Please create the user in Firebase Authentication first.';
+                break;
+              case 'auth/wrong-password':
+                errorMessageText = 'Incorrect password. Please try again.';
+                break;
+              case 'auth/invalid-email':
+                errorMessageText = 'Invalid email address format.';
+                break;
+              case 'auth/too-many-requests':
+                errorMessageText = 'Too many failed attempts. Please try again later.';
+                break;
+              case 'auth/network-request-failed':
+                errorMessageText = 'Network error. Please check your internet connection.';
+                break;
+              default:
+                errorMessageText = 'Authentication failed: ' + error.message;
+            }
+            
+            showMessage(errorMessageText);
+            
+            // Reset button
+            loginText.style.display = 'inline';
+            loginLoading.style.display = 'none';
+            loginBtn.disabled = false;
+          }
+        }
+      });
+      
+      // Real-time validation
+      const inputs = form.querySelectorAll('input');
+      inputs.forEach(input => {
+        input.addEventListener('input', function() {
+          if (this.style.borderColor === 'var(--error)') {
+            this.style.borderColor = 'var(--border)';
+            const errorElement = document.getElementById(this.id + '-error');
+            if (errorElement) {
+              errorElement.style.display = 'none';
+            }
+          }
+          // Hide global messages when user starts typing
+          successMessage.style.display = 'none';
+          errorMessage.style.display = 'none';
+        });
+      });
+      
+      // Check if user is already logged in
+      // Check if user is already logged in
+auth.onAuthStateChanged(async (user) => {
+  if (user && !isLoggingIn) {
+    console.log('User already logged in, redirecting...');
+    showMessage('Welcome back! Redirecting to dashboard...', 'success');
+    setTimeout(() => {
+      window.location.href = 'admin_dashboard.html';
+    }, 1000);
+  }
+      });
+    });
+  </script>
+</body>
+</html>

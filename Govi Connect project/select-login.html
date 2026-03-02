@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Login Type - Govi Connect</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/login.css">
+    <style>
+        /* Navigation Bar Styles */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            height: 40px;
+            width: auto;
+            transition: opacity 0.3s ease;
+        }
+
+        .logo-img:hover {
+            opacity: 0.8;
+        }
+
+        /* Adjust main content to account for navbar */
+        .login-wrapper {
+            margin-top: 20px;
+        }
+
+        /* Make the welcome text more visible */
+        .image-text {
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 80%;
+            margin: 0 auto;
+            color: var(--dark);
+        }
+
+        .image-text h3 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .image-text p {
+            font-size: 18px;
+            opacity: 0.9;
+            color: var(--gray);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 10px 15px;
+            }
+            
+            .logo-img {
+                height: 35px;
+            }
+            
+            .image-text {
+                max-width: 95%;
+                padding: 15px;
+            }
+            
+            .image-text h3 {
+                font-size: 24px;
+            }
+            
+            .image-text p {
+                font-size: 16px;
+            }
+        }
+        .text-logo {
+    font-size: 24px;
+    color: #388E3C; /* green */
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.home-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    text-decoration: none;
+    color: white;
+    background-color: #4CAF50; /* Green */
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.home-btn i {
+    margin-right: 6px;
+}
+
+.home-btn:hover {
+    background-color: #388E3C;
+    transform: scale(1.05);
+}
+
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar with Logo -->
+     <!-- Navigation Bar -->
+<!-- Top Left Home Button -->
+<a href="index.html" class="home-btn">
+    <i class="fas fa-home"></i> 
+</a>
+
+    
+    
+
+    <div class="login-wrapper">
+        <div class="login-image" style="background-image: url('farm.jpg.jpg');">
+            <div class="image-text">
+                <h3>Welcome to Govi Connect</h3>
+                <p>Connecting farmers and buyers for sustainable agriculture</p>
+            </div>
+        </div>
+        
+        <div class="login-form">
+            <div class="login-header">
+                <h2>Select Login Type</h2>
+                <p>Please choose your account type to continue</p>
+            </div>
+
+            <div class="login-options">
+                <a href="admin_login.html" class="login-option admin">
+                    <div class="login-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div class="login-text">
+                        <h4>Admin Login</h4>
+                    </div>
+                </a>
+
+                <a href="farmer/farmer-login.html" class="login-option">
+                    <div class="login-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="login-text">
+                        <h4>Farmer Login</h4>
+                    </div>
+                </a>
+
+                <a href="buyer firebase/buyer-login.html" class="login-option">
+                    <div class="login-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="login-text">
+                        <h4>Buyer Login</h4>
+                    </div>
+                </a>
+            </div>
+
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Add any necessary JavaScript functionality here
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click event for disabled buttons to show a message
+            const disabledButtons = document.querySelectorAll('.login-option.disabled');
+            disabledButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('This login option is not available yet. Please check back later.');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

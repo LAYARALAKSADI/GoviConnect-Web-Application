@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Management - GoviConnect</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #388E3C;
+            --secondary: #FFC107;
+            --success: #8BC34A;
+            --warning: #FF9800;
+            --danger: #F44336;
+            --light: #F9F9F9;
+            --dark: #2E2E2E;
+            --gray: #757575;
+            --light-gray: #e2e8f0;
+            --white: #ffffff;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(to bottom, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px 0;
+            transition: all 0.3s;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo i {
+            font-size: 24px;
+            margin-right: 10px;
+            color: var(--secondary);
+        }
+
+        .logo h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            margin-top: 20px;
+        }
+
+        .nav-links li {
+            list-style: none;
+            padding: 12px 20px;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-links li:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 3px solid var(--secondary);
+        }
+
+        .nav-links li.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left: 3px solid var(--secondary);
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-links i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: var(--light);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-btn:hover {
+            background: var(--primary-dark);
+            transform: translateX(-3px);
+        }
+
+        .header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--secondary);
+        }
+
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: #d32f2f;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+
+        .stat-card:nth-child(1)::before { background: var(--primary); }
+        .stat-card:nth-child(2)::before { background: var(--success); }
+        .stat-card:nth-child(3)::before { background: var(--secondary); }
+        .stat-card:nth-child(4)::before { background: var(--warning); }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .stat-card .icon {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 24px;
+            opacity: 0.2;
+        }
+
+        .stat-card:nth-child(1) .icon { color: var(--primary); }
+        .stat-card:nth-child(2) .icon { color: var(--success); }
+        .stat-card:nth-child(3) .icon { color: var(--secondary); }
+        .stat-card:nth-child(4) .icon { color: var(--warning); }
+
+        /* Content Sections */
+        .content-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .section-header h3 {
+            font-size: 18px;
+            color: var(--dark);
+        }
+
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 10px 10px 40px;
+            border: 2px solid var(--light-gray);
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        /* Farmers Table */
+        .farmers-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .farmers-table th,
+        .farmers-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .farmers-table th {
+            background: var(--light);
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .farmers-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-approved { background: #d1ecf1; color: #0c5460; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            opacity: 0.8;
+        }
+
+        .modal-body {
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .farmer-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-group {
+            margin-bottom: 15px;
+        }
+
+        .detail-group label {
+            font-weight: 600;
+            color: var(--gray);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .detail-group span {
+            color: var(--dark);
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .nav-links {
+                display: flex;
+                overflow-x: auto;
+            }
+            
+            .nav-links li {
+                flex-shrink: 0;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .farmers-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-leaf"></i>
+                <h1>Govi Connect</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="admin_dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="admin_profile.html"><i class="fas fa-users"></i> Profile</a></li>
+                <li class="active"><a href="farmer-management.html"><i class="fas fa-shopping-bag"></i> Farmer Management</a></li>
+                <li><a href="produt-management.html"><i class="fas fa-chart-bar"></i> Product Management</a></li>
+                <li><a href="buyer-management.html"><i class="fas fa-question-circle"></i> Buyer Management</a></li>
+                <li><a href="admin_analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+                <li><a href="admin_setting.html"><i class="fas fa-cog"></i> Settings</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div class="header-content">
+                    <button class="back-btn" id="backBtn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2>Farmer Management</h2>
+                </div>
+                <div class="user-info">
+                    <div>
+                        <h4>Admin User</h4>
+                        <p>Super Admin</p>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=4CAF50&color=fff" alt="Admin">
+                    <button class="logout-btn" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>Total Farmers</h3>
+                    <div class="number" id="totalFarmers">0</div>
+                    <div class="icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Farmers</h3>
+                    <div class="number" id="activeFarmers">0</div>
+                    <div class="icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3>Pending Approval</h3>
+                    <div class="number" id="pendingFarmers">0</div>
+                    <div class="icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Products</h3>
+                    <div class="number" id="totalProducts">0</div>
+                    <div class="icon">
+                        <i class="fas fa-apple-alt"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div class="loading" id="loadingSpinner">
+                <div class="spinner"></div>
+                <p>Loading farmers data...</p>
+            </div>
+
+            <!-- Farmers List Section -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>All Farmers</h3>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search farmers...">
+                    </div>
+                </div>
+
+                <table class="farmers-table" id="farmersTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Registration Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="farmersTableBody">
+                        <!-- Farmers will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Farmer Details Modal -->
+    <div id="farmerDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Farmer Details</h2>
+                <span class="close" onclick="closeFarmerModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="farmerDetailsContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAJBaIq9oElhG0iMbAos0TiWwUQLiADg7g",
+            authDomain: "goviconnect-105c9.firebaseapp.com",
+            projectId: "goviconnect-105c9",
+            storageBucket: "goviconnect-105c9.firebasestorage.app",
+            messagingSenderId: "173017898873",
+            appId: "1:173017898873:web:eb3ad5936aabe5cbc119a8"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Global variables
+        let allFarmers = [];
+        let currentUser = null;
+
+        // Check authentication and load data
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            auth.onAuthStateChanged(async function(user) {
+                if (!user) {
+                    window.location.href = 'admin_login.html';
+                    return;
+                }
+                
+                currentUser = user;
+                console.log('User authenticated:', user.email);
+                
+                // Load farmers data
+                await loadFarmersData();
+                
+                // Setup event listeners
+                setupEventListeners();
+            });
+        });
+
+        // Load farmers data from Firebase
+        async function loadFarmersData() {
+            try {
+                showLoading();
+                console.log('Loading farmers data from Firebase...');
+                
+                // Get all farmers from Firestore
+                const farmersSnapshot = await db.collection('farmers').get();
+                
+                allFarmers = [];
+                farmersSnapshot.forEach(doc => {
+                    const farmerData = doc.data();
+                    allFarmers.push({
+                        id: doc.id,
+                        ...farmerData
+                    });
+                });
+                
+                console.log('Loaded farmers:', allFarmers);
+                
+                // Update stats
+                updateStats(allFarmers);
+                
+                // Display farmers
+                displayFarmers(allFarmers);
+                
+            } catch (error) {
+                console.error('Error loading farmers data:', error);
+                alert('Error loading farmers data: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Update dashboard statistics
+        function updateStats(farmers) {
+            const totalFarmers = farmers.length;
+            const activeFarmers = farmers.filter(f => f.status === 'approved').length;
+            const pendingFarmers = farmers.filter(f => f.status === 'pending').length;
+            
+            document.getElementById('totalFarmers').textContent = totalFarmers;
+            document.getElementById('activeFarmers').textContent = activeFarmers;
+            document.getElementById('pendingFarmers').textContent = pendingFarmers;
+            
+            // Load products count
+            loadProductsCount();
+        }
+
+        // Load products count
+        async function loadProductsCount() {
+            try {
+                const productsSnapshot = await db.collection('products').get();
+                document.getElementById('totalProducts').textContent = productsSnapshot.size;
+            } catch (error) {
+                console.error('Error loading products count:', error);
+                document.getElementById('totalProducts').textContent = '0';
+            }
+        }
+
+        // Display farmers in the table
+        function displayFarmers(farmers) {
+            const tableBody = document.getElementById('farmersTableBody');
+            
+            if (farmers.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px;">
+                            <i class="fas fa-users" style="font-size: 48px; color: #ccc; margin-bottom: 10px;"></i>
+                            <p>No farmers found</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tableBody.innerHTML = farmers.map(farmer => `
+                <tr>
+                    <td>
+                        <strong>${farmer.fullName || 'N/A'}</strong>
+                        ${farmer.farmerCode ? `<br><small>Code: ${farmer.farmerCode}</small>` : ''}
+                    </td>
+                    <td>${farmer.email || 'N/A'}</td>
+                    <td>${farmer.phone || 'N/A'}</td>
+                    <td>${farmer.village || farmer.address || 'N/A'}</td>
+                    <td>
+                        <span class="status-badge status-${farmer.status || 'pending'}">
+                            ${formatStatus(farmer.status || 'pending')}
+                        </span>
+                    </td>
+                    <td>${formatDate(farmer.createdAt)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-outline" onclick="viewFarmerDetails('${farmer.id}')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            ${farmer.status === 'pending' ? `
+                            <button class="btn btn-primary" onclick="approveFarmer('${farmer.id}')">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                            <button class="btn btn-danger" onclick="rejectFarmer('${farmer.id}')">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                            ` : ''}
+                            ${farmer.status === 'approved' ? `
+                            <button class="btn btn-danger" onclick="suspendFarmer('${farmer.id}')">
+                                <i class="fas fa-pause"></i> Suspend
+                            </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // View farmer details
+        async function viewFarmerDetails(farmerId) {
+            try {
+                const farmerDoc = await db.collection('farmers').doc(farmerId).get();
+                
+                if (farmerDoc.exists) {
+                    const farmer = farmerDoc.data();
+                    
+                    // Get farmer's products
+                    const productsSnapshot = await db.collection('products')
+                        .where('farmerId', '==', farmerId)
+                        .get();
+                    
+                    const products = productsSnapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                    
+                    const detailContent = `
+                        <div class="farmer-details">
+                            <div class="detail-group">
+                                <label>Full Name:</label>
+                                <span>${farmer.fullName || 'N/A'}</span>
+                            </div>
+                            <div class="detail-group">
+                                <label>Email:</label>
+                                <span>${farmer.email || 'N/A'}</span>
+                            </div>
+                            <div class="detail-group">
+                                <label>Phone:</label>
+                                <span>${farmer.phone || 'N/A'}</span>
+                            </div>
+                            <div class="detail-group">
+                                <label>NIC:</label>
+                                <span>${farmer.nic || 'N/A'}</span>
+                            </div>
+                            <div class="detail-group">
+                                <label>Address:</label>
+                                <span>${farmer.village || farmer.address || 'N/A'}</span>
+                            </div>
+                            <div class="detail-group">
+                                <label>Land Size:</label>
+                                <span>${farmer.landSize ? `${farmer.landSize} acres` : 'N/A'}</span>
+                            </div>
+                            <div class="detail-group">
+                                <label>Farming Type:</label>
+                                <span>${formatFarmingType(farmer.farmingType)}</span>
+                            </div>
+                            <div class="detail-group">
+                                <label>Status:</label>
+                                <span class="status-badge status-${farmer.status || 'pending'}">
+                                    ${formatStatus(farmer.status || 'pending')}
+                                </span>
+                            </div>
+                            <div class="detail-group">
+                                <label>Registration Date:</label>
+                                <span>${formatDate(farmer.createdAt)}</span>
+                            </div>
+                            ${farmer.notes ? `
+                            <div class="detail-group">
+                                <label>Notes:</label>
+                                <span>${farmer.notes}</span>
+                            </div>
+                            ` : ''}
+                            
+                            <div class="detail-group" style="grid-column: 1 / -1;">
+                                <label>Products (${products.length}):</label>
+                                <div style="margin-top: 10px;">
+                                    ${products.length > 0 ? products.map(product => `
+                                        <div style="background: #f8f9fa; padding: 10px; margin: 5px 0; border-radius: 5px;">
+                                            <strong>${product.name}</strong> - 
+                                            ${product.quantity} ${product.unit} - 
+                                            Rs. ${product.price}/${product.priceUnit} -
+                                            <span class="status-badge status-${product.status || 'pending'}">
+                                                ${formatStatus(product.status || 'pending')}
+                                            </span>
+                                        </div>
+                                    `).join('') : '<p>No products added yet</p>'}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.getElementById('farmerDetailsContent').innerHTML = detailContent;
+                    document.getElementById('farmerDetailsModal').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading farmer details:', error);
+                alert('Error loading farmer details: ' + error.message);
+            }
+        }
+
+        // Approve farmer
+        async function approveFarmer(farmerId) {
+            if (confirm('Are you sure you want to approve this farmer?')) {
+                try {
+                    await db.collection('farmers').doc(farmerId).update({
+                        status: 'approved',
+                        approvedAt: new Date().toISOString()
+                    });
+                    
+                    alert('Farmer approved successfully!');
+                    await loadFarmersData(); // Reload data
+                } catch (error) {
+                    console.error('Error approving farmer:', error);
+                    alert('Error approving farmer: ' + error.message);
+                }
+            }
+        }
+
+        // Reject farmer
+        async function rejectFarmer(farmerId) {
+            const reason = prompt('Please enter reason for rejection:');
+            if (reason !== null) {
+                try {
+                    await db.collection('farmers').doc(farmerId).update({
+                        status: 'rejected',
+                        rejectionReason: reason,
+                        rejectedAt: new Date().toISOString()
+                    });
+                    
+                    alert('Farmer rejected successfully!');
+                    await loadFarmersData(); // Reload data
+                } catch (error) {
+                    console.error('Error rejecting farmer:', error);
+                    alert('Error rejecting farmer: ' + error.message);
+                }
+            }
+        }
+
+        // Suspend farmer
+        async function suspendFarmer(farmerId) {
+            const reason = prompt('Please enter reason for suspension:');
+            if (reason !== null) {
+                try {
+                    await db.collection('farmers').doc(farmerId).update({
+                        status: 'suspended',
+                        suspensionReason: reason,
+                        suspendedAt: new Date().toISOString()
+                    });
+                    
+                    alert('Farmer suspended successfully!');
+                    await loadFarmersData(); // Reload data
+                } catch (error) {
+                    console.error('Error suspending farmer:', error);
+                    alert('Error suspending farmer: ' + error.message);
+                }
+            }
+        }
+
+        // Helper functions
+        function formatStatus(status) {
+            const statusMap = {
+                'pending': 'Pending Approval',
+                'approved': 'Approved',
+                'rejected': 'Rejected',
+                'suspended': 'Suspended'
+            };
+            return statusMap[status] || status;
+        }
+
+        function formatFarmingType(type) {
+            const types = {
+                'organic': 'Organic Farming',
+                'traditional': 'Traditional Farming',
+                'hydroponic': 'Hydroponic',
+                'mixed': 'Mixed Farming'
+            };
+            return types[type] || type || 'Not specified';
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            } catch (error) {
+                return 'Invalid Date';
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+
+        // Modal functions
+        function closeFarmerModal() {
+            document.getElementById('farmerDetailsModal').style.display = 'none';
+        }
+
+        // Search functionality
+        function setupEventListeners() {
+            // Search input
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const filteredFarmers = allFarmers.filter(farmer => 
+                    (farmer.fullName && farmer.fullName.toLowerCase().includes(searchTerm)) ||
+                    (farmer.email && farmer.email.toLowerCase().includes(searchTerm)) ||
+                    (farmer.phone && farmer.phone.includes(searchTerm)) ||
+                    (farmer.village && farmer.village.toLowerCase().includes(searchTerm)) ||
+                    (farmer.nic && farmer.nic.toLowerCase().includes(searchTerm))
+                );
+                displayFarmers(filteredFarmers);
+            });
+
+            // Back button
+            document.getElementById('backBtn').addEventListener('click', function() {
+                if (document.referrer && document.referrer.includes(window.location.host)) {
+                    window.history.back();
+                } else {
+                    window.location.href = 'admin_dashboard.html';
+                }
+            });
+
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                auth.signOut().then(() => {
+                    alert('You have been logged out successfully');
+                    window.location.href = 'admin_login.html';
+                }).catch((error) => {
+                    alert('Logout failed: ' + error.message);
+                });
+            });
+
+            // Close modal when clicking outside
+            window.addEventListener('click', function(e) {
+                const modal = document.getElementById('farmerDetailsModal');
+                if (e.target === modal) {
+                    closeFarmerModal();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

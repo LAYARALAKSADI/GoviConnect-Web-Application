@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <link rel="stylesheet" href="css/buyer-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>My Profile</h1>
+            <div class="header-actions">
+                <a href="buyer-dashboard.html" class="btn-secondary">Back to Dashboard</a>
+            </div>
+        </header>
+
+        <div class="profile-container">
+            <!-- Profile Information -->
+            <div class="profile-section">
+                <h2>Personal Information</h2>
+                <form id="profileForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" required readonly>
+                            <small>Email cannot be changed</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="nic">NIC Number</label>
+                            <input type="text" id="nic" required>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" onclick="resetForm()" class="btn-secondary">Cancel</button>
+                        <button type="submit" class="btn-primary">Update Profile</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Change Password -->
+            <div class="profile-section">
+                <h2>Change Password</h2>
+                <form id="passwordForm">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" required minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmNewPassword">Confirm New Password</label>
+                            <input type="password" id="confirmNewPassword" required>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Change Password</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Account Statistics -->
+            <div class="profile-section">
+                <h2>Account Statistics</h2>
+                <div class="stats-grid">
+                    <div class="profile-stat">
+                        <span class="stat-value" id="totalOrdersCount">0</span>
+                        <span class="stat-label">Total Orders</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-value" id="memberSince">-</span>
+                        <span class="stat-label">Member Since</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-value" id="lastOrderDate">-</span>
+                        <span class="stat-label">Last Order</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/buyer-profile.js"></script>
+</body>
+</html>

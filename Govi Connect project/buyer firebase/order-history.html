@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History</title>
+    <link rel="stylesheet" href="css/buyer-styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Order History</h1>
+            <div class="header-actions">
+                <a href="buyer-dashboard.html" class="btn-secondary">Back to Dashboard</a>
+            </div>
+        </header>
+
+        <div id="ordersList" class="orders-list">
+            <!-- Orders will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAJBaIq9oElhG0iMbAos0TiWwUQLiADg7g",
+            authDomain: "goviconnect-105c9.firebasestorage.app",
+            projectId: "goviconnect-105c9",
+            storageBucket: "goviconnect-105c9.firebasestorage.app",
+            messagingSenderId: "173017898873",
+            appId: "1:173017898873:web:eb3ad5936aabe5cbc119a8"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Load order history
+        async function loadOrderHistory() {
+            const user = auth.currentUser;
+            if (!user) {
+                window.location.href = 'buyer-login.html';
+                return;
+            }
+
+            try {
+                const ordersList = document.getElementById('ordersList');
+                ordersList.innerHTML = '<p class="loading">Loading orders...</p>';
+
+                const ordersSnapshot = await db.collection('orders')
+                    .where('buyerId', '==', user.uid)
+                    .orderBy('createdAt', 'desc')
+                    .get();
+
+                console.log('Orders found:', ordersSnapshot.size);
+
+                if (ordersSnapshot.empty) {
+                    ordersList.innerHTML = '<p class="empty-orders">No orders found</p>';
+                    return;
+                }
+
+                ordersList.innerHTML = ordersSnapshot.docs.map(doc => {
+                    const order = doc.data();
+                    const orderDate = order.createdAt ? 
+                        order.createdAt.toDate().toLocaleDateString() : 
+                        new Date().toLocaleDateString();
+                    
+                    return `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <h3>Order #${doc.id.substring(0, 8)}</h3>
+                                <span class="order-status ${order.status || 'placed'}">${formatOrderStatus(order.status || 'placed')}</span>
+                            </div>
+                            <div class="order-details">
+                                <p><strong>Date:</strong> ${orderDate}</p>
+                                <p><strong>Total Amount:</strong> Rs. ${order.totalAmount?.toFixed(2) || '0.00'}</p>
+                                <p><strong>Items:</strong> ${order.items?.length || 0}</p>
+                            </div>
+                            <div class="order-items">
+                                <h4>Order Items:</h4>
+                                ${(order.items || []).map(item => `
+                                    <div class="order-item">
+                                        <span class="item-name">${item.name}</span>
+                                        <span class="item-quantity">${item.quantity} kg × Rs. ${item.price}</span>
+                                        <span class="item-total">Rs. ${(item.quantity * item.price).toFixed(2)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error("Error loading orders:", error);
+                document.getElementById('ordersList').innerHTML = '<p class="loading">Error loading orders: ' + error.message + '</p>';
+            }
+        }
+
+        // Format order status for display
+        function formatOrderStatus(status) {
+            const statusMap = {
+                'placed': 'Order Placed',
+                'processing': 'Processing',
+                'shipped': 'Shipped',
+                'delivered': 'Delivered',
+                'cancelled': 'Cancelled'
+            };
+            return statusMap[status] || status;
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    loadOrderHistory();
+                } else {
+                    window.location.href = 'buyer-login.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

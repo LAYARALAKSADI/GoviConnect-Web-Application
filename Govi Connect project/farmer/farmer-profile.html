@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - GoviConnect</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="farmer-dashboard">
+    <!-- Farmer Header -->
+    <header class="farmer-header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-tractor"></i>
+                <span>GoviConnect</span>
+            </div>
+            <div class="farmer-info">
+                <span id="welcomeMessage">Welcome!</span>
+                <div class="farmer-avatar">
+                    <img src="" alt="Profile" id="profileImage" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Navigation -->
+    <nav class="dashboard-nav">
+        <div class="nav-container">
+            <h2>FarmerProfileDashboard</h2>
+            <div class="nav-links">
+                <a href="farmer-profile.html" class="nav-link active">
+                    <i class="fas fa-user"></i>
+                    My Profile
+                </a>
+                <a href="farmer-products.html" class="nav-link">
+                    <i class="fas fa-apple-alt"></i>
+                    My Products
+                </a>
+                <a href="farmer-orders.html" class="nav-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    My Orders
+                </a>
+                <a href="#" class="nav-link" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="dashboard-content">
+        <div class="content-header">
+            <h1>My Profile</h1>
+            <button class="btn btn-primary" onclick="editProfile()">
+                <i class="fas fa-edit"></i>
+                Edit Profile
+            </button>
+        </div>
+
+        <div class="profile-content">
+            <!-- Profile Stats -->
+            <div class="profile-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-apple-alt"></i>
+                    </div>
+                    <div class="stat-number" id="totalProducts">0</div>
+                    <div class="stat-label">Active Products</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-number" id="totalOrders">0</div>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-number" id="totalRevenue">Rs. 0</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-number" id="rating">0.0</div>
+                    <div class="stat-label">Customer Rating</div>
+                </div>
+            </div>
+
+            <!-- Farmer Details Section -->
+            <section class="profile-section">
+                <h2>Personal Information</h2>
+                <div class="details-grid" id="farmerDetails">
+                    <div class="detail-item">
+                        <label>Full Name:</label>
+                        <span id="detailFullName">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>NIC Number:</label>
+                        <span id="detailNIC">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Phone Number:</label>
+                        <span id="detailPhone">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Email Address:</label>
+                        <span id="detailEmail">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Village/Address:</label>
+                        <span id="detailVillage">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Farmer Code:</label>
+                        <span id="detailFarmerCode">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Land Size:</label>
+                        <span id="detailLandSize">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Farming Type:</label>
+                        <span id="detailFarmingType">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Member Since:</label>
+                        <span id="detailMemberSince">-</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Account Status:</label>
+                        <span class="status-indicator status-active" id="detailStatus">-</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bank Details Section -->
+            <section class="profile-section">
+                <h2>Bank Information</h2>
+                <div class="details-grid" id="bankDetails">
+                    <div class="detail-item">
+                        <label>Bank Name:</label>
+                        <span id="detailBankName">Not provided</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Account Number:</label>
+                        <span id="detailAccountNumber">Not provided</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Branch Name:</label>
+                        <span id="detailBranchName">Not provided</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Account Type:</label>
+                        <span id="detailAccountType">Not provided</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Links Section -->
+            <section class="quick-links-section">
+                <h2>Quick Access</h2>
+                <div class="quick-links">
+                    <a href="farmer-products.html" class="quick-link">
+                        <i class="fas fa-apple-alt"></i>
+                        <span>Manage Products</span>
+                    </a>
+                    <a href="farmer-orders.html" class="quick-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>View Orders</span>
+                    </a>
+                    <a href="#" class="quick-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Sales Analytics</span>
+                    </a>
+                    <a href="#" class="quick-link">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Get Support</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Recent Activity -->
+            <section class="activity-section">
+                <h2>Recent Activity</h2>
+                <div class="activity-list" id="recentActivity">
+                    <!-- Activity will be loaded from Firebase -->
+                    <div class="empty-state">
+                        <i class="fas fa-history"></i>
+                        <h3>No Recent Activity</h3>
+                        <p>Your activities will appear here once you start using the system</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Profile Information</h2>
+                <span class="close" onclick="closeEditProfileModal()">&times;</span>
+            </div>
+            <form class="farmer-form" id="editProfileForm">
+                <!-- Profile Image Upload -->
+                <div class="profile-image-upload">
+                    <div class="profile-image-preview" onclick="document.getElementById('editProfileImage').click()">
+                        <img src="" alt="Profile Preview" id="editProfilePreviewImage" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <input type="file" id="editProfileImage" accept="image/*" style="display: none;" onchange="previewProfileImage(this)">
+                    <div class="image-upload-text">Click to change profile photo</div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="editFullName">Full Name *</label>
+                        <input type="text" id="editFullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPhone">Phone Number *</label>
+                        <input type="tel" id="editPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email Address *</label>
+                        <input type="email" id="editEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editVillage">Village/Address *</label>
+                        <input type="text" id="editVillage" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editLandSize">Land Size (acres)</label>
+                        <input type="number" id="editLandSize" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="editFarmingType">Farming Type</label>
+                        <select id="editFarmingType">
+                            <option value="">Select Type</option>
+                            <option value="organic">Organic Farming</option>
+                            <option value="traditional">Traditional Farming</option>
+                            <option value="hydroponic">Hydroponic</option>
+                            <option value="mixed">Mixed Farming</option>
+                            <option value="vegetable">Vegetable Farming</option>
+                            <option value="fruit">Fruit Farming</option>
+                            <option value="paddy">Paddy Cultivation</option>
+                            <option value="livestock">Livestock Farming</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Bank Details -->
+                    <div class="form-group full-width">
+                        <h3 style="color: var(--dark-blue); margin-bottom: 1rem;">Bank Information</h3>
+                    </div>
+                    <div class="form-group">
+                        <label for="editBankName">Bank Name</label>
+                        <input type="text" id="editBankName">
+                    </div>
+                    <div class="form-group">
+                        <label for="editAccountNumber">Account Number</label>
+                        <input type="text" id="editAccountNumber">
+                    </div>
+                    <div class="form-group">
+                        <label for="editBranchName">Branch Name</label>
+                        <input type="text" id="editBranchName">
+                    </div>
+                    <div class="form-group">
+                        <label for="editAccountType">Account Type</label>
+                        <select id="editAccountType">
+                            <option value="">Select Type</option>
+                            <option value="savings">Savings Account</option>
+                            <option value="current">Current Account</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="editNotes">Additional Notes</label>
+                        <textarea id="editNotes" rows="3" placeholder="Any additional information..."></textarea>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeEditProfileModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase Configuration -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAJBaIq9oElhG0iMbAos0TiWwUQLiADg7g",
+            authDomain: "goviconnect-105c9.firebaseapp.com",
+            projectId: "goviconnect-105c9",
+            storageBucket: "goviconnect-105c9.firebasestorage.app",
+            messagingSenderId: "173017898873",
+            appId: "1:173017898873:web:eb3ad5936aabe5cbc119a8"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        console.log('Firebase connected in profile page!');
+    </script>
+
+<script>
+    // Profile page specific functionality
+    let currentFarmerData = null;
+    let currentUserId = null;
+    let profileImageFile = null;
+
+    // FIXED: Check authentication and load profile data
+    async function initializeProfile() {
+        const user = await checkAuth();
+        
+        if (!user) {
+            window.location.href = 'farmer-login.html';
+            return;
+        }
+        
+        currentUserId = user.uid;
+        await loadProfileData(currentUserId);
+    }
+
+    // FIXED: Check if user is authenticated AND is a farmer
+    function checkAuth() {
+        return new Promise((resolve) => {
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    // Verify user is actually a farmer
+                    try {
+                        const farmerDoc = await db.collection('farmers').doc(user.uid).get();
+                        if (farmerDoc.exists) {
+                            console.log('User is a verified farmer');
+                            resolve(user);
+                        } else {
+                            // User is not a farmer, check if they're a buyer
+                            const userDoc = await db.collection('users').doc(user.uid).get();
+                            if (userDoc.exists && userDoc.data().userType === "buyer") {
+                                console.log('User is a buyer, redirecting to buyer portal');
+                                await auth.signOut();
+                                alert('Access denied. This is the farmer portal. Please use the buyer login page.');
+                                window.location.href = 'buyer-login.html';
+                            } else {
+                                console.log('User not found in any collection, signing out');
+                                await auth.signOut();
+                                window.location.href = 'farmer-login.html';
+                            }
+                            resolve(null);
+                        }
+                    } catch (error) {
+                        console.error('Error checking user type:', error);
+                        await auth.signOut();
+                        window.location.href = 'farmer-login.html';
+                        resolve(null);
+                    }
+                } else {
+                    resolve(null);
+                }
+            });
+        });
+    }
+
+    async function loadProfileData(uid) {
+        try {
+            console.log('Loading profile data for user:', uid);
+            const doc = await db.collection('farmers').doc(uid).get();
+            
+            if (doc.exists) {
+                currentFarmerData = doc.data();
+                console.log('Farmer data loaded:', currentFarmerData);
+                displayProfileData(currentFarmerData);
+                updateProfileStats(uid);
+            } else {
+                console.log('No farmer profile found');
+                showEmptyState();
+            }
+        } catch (error) {
+            console.error('Error loading profile:', error);
+            showEmptyState();
+        }
+    }
+
+    function displayProfileData(data) {
+        if (!data) {
+            showEmptyState();
+            return;
+        }
+        
+        // Update welcome message
+        document.getElementById('welcomeMessage').textContent = `Welcome, ${data.fullName || 'Farmer'}!`;
+        
+        // Update profile details
+        document.getElementById('detailFullName').textContent = data.fullName || '-';
+        document.getElementById('detailNIC').textContent = data.nic || '-';
+        document.getElementById('detailPhone').textContent = data.phone || '-';
+        document.getElementById('detailEmail').textContent = data.email || '-';
+        document.getElementById('detailVillage').textContent = data.village || '-';
+        document.getElementById('detailFarmerCode').textContent = data.farmerCode || '-';
+        document.getElementById('detailLandSize').textContent = data.landSize ? `${data.landSize} acres` : '-';
+        document.getElementById('detailFarmingType').textContent = data.farmingType ? formatFarmingType(data.farmingType) : '-';
+        document.getElementById('detailMemberSince').textContent = data.memberSince ? formatDate(data.memberSince) : '-';
+        
+        // Update status with proper styling
+        const statusElement = document.getElementById('detailStatus');
+        const status = data.status || 'pending';
+        statusElement.textContent = formatStatus(status);
+        statusElement.className = 'status-indicator status-' + status;
+        
+        // Update bank details
+        document.getElementById('detailBankName').textContent = data.bankName || 'Not provided';
+        document.getElementById('detailAccountNumber').textContent = data.accountNumber || 'Not provided';
+        document.getElementById('detailBranchName').textContent = data.branchName || 'Not provided';
+        document.getElementById('detailAccountType').textContent = data.accountType ? formatAccountType(data.accountType) : 'Not provided';
+        
+        // Update profile image if available
+        if (data.profileImage) {
+            const profileImage = document.getElementById('profileImage');
+            profileImage.src = data.profileImage;
+            profileImage.style.display = 'block';
+            profileImage.nextElementSibling.style.display = 'none';
+            
+            // Also update edit modal preview
+            const editPreview = document.getElementById('editProfilePreviewImage');
+            editPreview.src = data.profileImage;
+            editPreview.style.display = 'block';
+            editPreview.nextElementSibling.style.display = 'none';
+        }
+    }
+
+    function formatFarmingType(type) {
+        const types = {
+            'organic': 'Organic Farming',
+            'traditional': 'Traditional Farming',
+            'hydroponic': 'Hydroponic',
+            'mixed': 'Mixed Farming',
+            'vegetable': 'Vegetable Farming',
+            'fruit': 'Fruit Farming',
+            'paddy': 'Paddy Cultivation',
+            'livestock': 'Livestock Farming'
+        };
+        return types[type] || type;
+    }
+
+    function formatStatus(status) {
+        const statusMap = {
+            'pending': 'Pending Approval',
+            'approved': 'Active',
+            'rejected': 'Rejected',
+            'suspended': 'Suspended'
+        };
+        return statusMap[status] || status;
+    }
+
+    function formatAccountType(type) {
+        return type === 'savings' ? 'Savings Account' : 'Current Account';
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+
+    async function updateProfileStats(uid) {
+        try {
+            // Get products count
+            const productsSnapshot = await db.collection('products')
+                .where('farmerId', '==', uid)
+                .where('isActive', '==', true)
+                .get();
+            document.getElementById('totalProducts').textContent = productsSnapshot.size;
+            
+            // Get orders count
+            const ordersSnapshot = await db.collection('orders')
+                .where('farmerId', '==', uid)
+                .get();
+            document.getElementById('totalOrders').textContent = ordersSnapshot.size;
+            
+            // Calculate revenue
+            let revenue = 0;
+            ordersSnapshot.forEach(doc => {
+                const order = doc.data();
+                revenue += order.totalPrice || 0;
+            });
+            document.getElementById('totalRevenue').textContent = `Rs. ${revenue.toLocaleString()}`;
+            
+            // For now, set default rating
+            document.getElementById('rating').textContent = '5.0';
+            
+        } catch (error) {
+            console.error('Error updating stats:', error);
+        }
+    }
+
+    function showEmptyState() {
+        document.getElementById('welcomeMessage').textContent = 'Welcome!';
+        document.getElementById('detailFullName').textContent = '-';
+        document.getElementById('detailNIC').textContent = '-';
+        document.getElementById('detailPhone').textContent = '-';
+        document.getElementById('detailEmail').textContent = '-';
+        document.getElementById('detailVillage').textContent = '-';
+        document.getElementById('detailFarmerCode').textContent = '-';
+        document.getElementById('detailLandSize').textContent = '-';
+        document.getElementById('detailFarmingType').textContent = '-';
+        document.getElementById('detailMemberSince').textContent = '-';
+        document.getElementById('detailStatus').textContent = '-';
+        
+        document.getElementById('totalProducts').textContent = '0';
+        document.getElementById('totalOrders').textContent = '0';
+        document.getElementById('totalRevenue').textContent = 'Rs. 0';
+        document.getElementById('rating').textContent = '0.0';
+    }
+
+    // Edit Profile Functions
+    function editProfile() {
+        if (!currentFarmerData) return;
+        
+        // Reset file selection
+        profileImageFile = null;
+        document.getElementById('editProfileImage').value = '';
+        
+        // Populate form with current data
+        document.getElementById('editFullName').value = currentFarmerData.fullName || '';
+        document.getElementById('editPhone').value = currentFarmerData.phone || '';
+        document.getElementById('editEmail').value = currentFarmerData.email || '';
+        document.getElementById('editVillage').value = currentFarmerData.village || '';
+        document.getElementById('editLandSize').value = currentFarmerData.landSize || '';
+        document.getElementById('editFarmingType').value = currentFarmerData.farmingType || '';
+        document.getElementById('editBankName').value = currentFarmerData.bankName || '';
+        document.getElementById('editAccountNumber').value = currentFarmerData.accountNumber || '';
+        document.getElementById('editBranchName').value = currentFarmerData.branchName || '';
+        document.getElementById('editAccountType').value = currentFarmerData.accountType || '';
+        document.getElementById('editNotes').value = currentFarmerData.notes || '';
+        
+        // Set profile image preview
+        if (currentFarmerData.profileImage) {
+            const preview = document.getElementById('editProfilePreviewImage');
+            preview.src = currentFarmerData.profileImage;
+            preview.style.display = 'block';
+            preview.nextElementSibling.style.display = 'none';
+        } else {
+            const preview = document.getElementById('editProfilePreviewImage');
+            preview.style.display = 'none';
+            preview.nextElementSibling.style.display = 'flex';
+        }
+        
+        document.getElementById('editProfileModal').style.display = 'block';
+    }
+
+    function closeEditProfileModal() {
+        document.getElementById('editProfileModal').style.display = 'none';
+        profileImageFile = null;
+    }
+
+    function previewProfileImage(input) {
+        const preview = document.getElementById('editProfilePreviewImage');
+        const file = input.files[0];
+        
+        if (file) {
+            // Check file size (max 2MB for Base64)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Image size should be less than 2MB for better performance');
+                input.value = '';
+                return;
+            }
+            
+            // Check file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file (JPG, PNG, etc.)');
+                input.value = '';
+                return;
+            }
+            
+            profileImageFile = file;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                preview.nextElementSibling.style.display = 'none';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Upload image as Base64 (FREE solution - no Storage needed)
+    async function uploadProfileImage(file, userId) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                // Convert image to Base64 string
+                const base64String = e.target.result;
+                resolve(base64String);
+            };
+            
+            reader.onerror = function(error) {
+                reject(new Error('Error reading image file'));
+            };
+            
+            // Read as Data URL (Base64)
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Update profile form submission
+    document.getElementById('editProfileForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        if (!currentUserId) return;
+        
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        
+        // Show loading
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        submitBtn.disabled = true;
+        
+        try {
+            let profileImageUrl = currentFarmerData.profileImage;
+            
+            // Upload new profile image if selected
+            if (profileImageFile) {
+                profileImageUrl = await uploadProfileImage(profileImageFile, currentUserId);
+            }
+            
+            const updatedData = {
+                fullName: document.getElementById('editFullName').value,
+                phone: document.getElementById('editPhone').value,
+                email: document.getElementById('editEmail').value,
+                village: document.getElementById('editVillage').value,
+                landSize: document.getElementById('editLandSize').value,
+                farmingType: document.getElementById('editFarmingType').value,
+                bankName: document.getElementById('editBankName').value,
+                accountNumber: document.getElementById('editAccountNumber').value,
+                branchName: document.getElementById('editBranchName').value,
+                accountType: document.getElementById('editAccountType').value,
+                notes: document.getElementById('editNotes').value,
+                profileImage: profileImageUrl,
+                updatedAt: new Date().toISOString()
+            };
+            
+            await db.collection('farmers').doc(currentUserId).update(updatedData);
+            alert('Profile updated successfully!');
+            closeEditProfileModal();
+            await loadProfileData(currentUserId); // Reload data
+            
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            alert('Error updating profile: ' + error.message);
+        } finally {
+            // Reset button
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+        }
+    });
+
+    // FIXED: Logout function
+    async function logout() {
+        if (confirm('Are you sure you want to logout?')) {
+            try {
+                await auth.signOut();
+                localStorage.removeItem('rememberMe');
+                window.location.href = 'farmer-login.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('Logout failed: ' + error.message);
+            }
+        }
+    }
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('editProfileModal');
+        if (e.target === modal) {
+            closeEditProfileModal();
+        }
+    });
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeProfile();
+    });
+</script>
+</body>
+</html>

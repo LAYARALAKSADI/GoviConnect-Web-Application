@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Govi Connect - Dambulla Economic Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2e7d32;
+            --primary-light: #4caf50;
+            --primary-dark: #1b5e20;
+            --secondary: #ff9800;
+            --light: #f5f5f5;
+            --dark: #333;
+            --gray: #757575;
+            --white: #ffffff;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-size: 36px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: var(--white);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e68900;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-img {
+            height: 80px;
+            width: auto;
+            transition: opacity 0.3s ease;
+        }
+
+        .logo-img:hover {
+            opacity: 0.8;
+        }
+
+        .logo-text h1 {
+            color: var(--primary);
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .logo-text span {
+            color: var(--secondary);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 25px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .mobile-menu {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            color: var(--white);
+            padding: 120px 0;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h2 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* About Section */
+        .about {
+            background-color: var(--white);
+        }
+
+        .about-container {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .about-content {
+            flex: 1;
+        }
+
+        .about-image {
+            flex: 1;
+            text-align: center;
+        }
+
+        .about-image img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .about-content h2 {
+            font-size: 36px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .about-content p {
+            color: var(--gray);
+            margin-bottom: 30px;
+        }
+
+        /* What We Do Section */
+        .what-we-do {
+            background-color: var(--light);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background-color: var(--white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            text-align: center;
+            padding: 40px 25px;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            background-color: var(--primary-light);
+            color: var(--white);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 36px;
+        }
+
+        .feature-content h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .feature-content p {
+            color: var(--gray);
+        }
+
+        /* Services Section */
+        .services {
+            background-color: var(--white);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .service-card {
+            background-color: var(--white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            text-align: center;
+            padding: 40px 25px;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .service-icon {
+            background-color: var(--primary-light);
+            color: var(--white);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 36px;
+        }
+
+        .service-content h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .service-content p {
+            color: var(--gray);
+        }
+
+        /* Contact Section */
+        .contact {
+            background-color: var(--light);
+        }
+
+        .contact-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 50px;
+        }
+
+        .contact-info {
+            background-color: var(--white);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-info h3 {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: var(--primary);
+        }
+
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 20px;
+        }
+
+        .contact-form {
+            background-color: var(--white);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary-dark);
+            color: var(--white);
+            padding: 60px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 2px;
+            background-color: var(--secondary);
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-column ul li a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-column ul li a:hover {
+            color: var(--white);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: var(--primary);
+        }
+
+        .close {
+            color: var(--gray);
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: var(--dark);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .login-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .login-option {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: var(--dark);
+        }
+
+        .login-option:hover {
+            background-color: var(--light);
+            border-color: var(--primary);
+        }
+
+        .login-icon {
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 20px;
+        }
+
+        .login-text h4 {
+            margin: 0 0 5px 0;
+        }
+
+        .login-text p {
+            margin: 0;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        /* Admin Dashboard Styles */
+        .admin-dashboard {
+            display: none;
+            padding: 20px;
+        }
+
+        .dashboard-header {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-nav {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-nav button {
+            padding: 12px 25px;
+            background-color: var(--white);
+            border: 1px solid var(--primary);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .dashboard-nav button:hover {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .dashboard-nav button.active {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .dashboard-content {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-section {
+            display: none;
+        }
+
+        .dashboard-section.active {
+            display: block;
+        }
+
+        .dashboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .dashboard-table th, .dashboard-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .dashboard-table th {
+            background-color: var(--light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .dashboard-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .hero h2 {
+                font-size: 36px;
+            }
+            
+            .about-container {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu {
+                display: block;
+            }
+
+            nav {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: var(--white);
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+                transform: translateY(-100%);
+                opacity: 0;
+                transition: all 0.3s;
+                z-index: 99;
+            }
+
+            nav.active {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            nav ul {
+                flex-direction: column;
+            }
+
+            nav ul li {
+                margin: 10px 0;
+            }
+
+            .hero {
+                padding: 80px 0;
+            }
+
+            .hero h2 {
+                font-size: 32px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .dashboard-nav {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero h2 {
+                font-size: 28px;
+            }
+
+            .section-title h2 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">
+                    <div class="logo-container">
+                        <a href="index.html">
+                            <img src="logo.png" alt="Govi Connect Logo" class="logo-img">
+                        </a>
+                        <div class="logo-text">
+                            <h1>Govi <span>Connect</span></h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#what-we-do">What We Do</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#contact">Contact Us</a></li>
+                    </ul>
+                </nav>
+                <div class="cta-buttons">
+                    <a href="signup.html" class="btn btn-primary" id="signupBtn">Sign Up</a>
+                    <a href="select-login.html" class="btn btn-secondary" id="signupBtn">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h2>Govi Connect - Dambulla Economic Center</h2>
+                <p>Connecting farmers directly to buyers for fair prices and sustainable agriculture. Empowering the agricultural community through technology.</p>
+                <a href="#about" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section about" id="about">
+        <div class="container">
+            <div class="section-title">
+                <h2>About Govi Connect</h2>
+                <p>Transforming agriculture in Dambulla through digital innovation</p>
+            </div>
+            <div class="about-container">
+                <div class="about-content">
+                    <h2>Our Mission</h2>
+                    <p>Govi Connect is a digital platform created specifically for the Dambulla Economic Center to bridge the gap between farmers and buyers. We aim to eliminate intermediaries and ensure fair prices for agricultural products.</p>
+                    <p>Our platform empowers farmers with direct market access, real-time pricing information, and secure payment systems while providing buyers with quality produce directly from source.</p>
+                    <p>By leveraging technology, we're creating a transparent, efficient, and sustainable agricultural ecosystem that benefits all stakeholders in the supply chain.</p>
+                    <a href="#what-we-do" class="btn btn-primary">Our Services</a>
+                </div>
+                <div class="about-image">
+                    
+                    <!-- If image is in same folder as HTML file -->
+
+
+<!-- If image is in a different directory -->
+<img src="veg.jpg" alt="Vegetables">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What We Do Section -->
+    <section class="section what-we-do" id="what-we-do">
+        <div class="container">
+            <div class="section-title">
+                <h2>What We Do</h2>
+                <p>Our platform offers comprehensive solutions for the agricultural community</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tractor"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Farmer Empowerment</h3>
+                        <p>Direct market access, fair pricing, and financial inclusion for farmers in the Dambulla region.</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Buyer Connect</h3>
+                        <p>Direct sourcing from verified farmers with quality assurance and transparent pricing.</p>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Product Management</h3>
+                        <p>We aim to simplify product management through secure verification, helping farmers showcase products and buyers purchase with confidence.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="section services" id="services">
+        <div class="container">
+            <div class="section-title">
+                <h2>Our Services</h2>
+                <p>Comprehensive solutions for the agricultural ecosystem</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div class="service-content">
+                        <h3>Admin Dashboard</h3>
+                        <p>Complete management of farmers, products, and buyers with analytics and reporting.</p>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="service-content">
+                        <h3>Farmer Portal</h3>
+                        <p>Product listing, order management, payment tracking, and market insights for farmers.</p>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="service-content">
+                        <h3>Buyer Platform</h3>
+                        <p>Product discovery, ordering, quality assurance, and supplier management for buyers.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section contact" id="contact">
+        <div class="container">
+            <div class="section-title">
+                <h2>Contact Us</h2>
+                <p>Get in touch with Govi Connect team</p>
+            </div>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h3>Get In Touch</h3>
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div>
+                                <h4>Address</h4>
+                                <p>Dambulla Economic Center, Dambulla, Sri Lanka</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div>
+                                <h4>Phone</h4>
+                                <p>+94 66 222 2222</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <h4>Email</h4>
+                                <p>info@goviconnect.lk</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <h4>Hours</h4>
+                                <p>Monday - Saturday: 6am - 6pm</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <h3>Send Us a Message</h3>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Govi Connect</h3>
+                    <p>Digital platform connecting farmers and buyers at Dambulla Economic Center for fair trade and sustainable agriculture.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#what-we-do">What We Do</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#contact">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Services</h3>
+                    <ul>
+                        <li><a href="#">Admin Dashboard</a></li>
+                        <li><a href="#">Farmer Portal</a></li>
+                        <li><a href="#">Buyer Platform</a></li>
+                        <li><a href="#">Market Insights</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> Dambulla Economic Center</li>
+                        <li><i class="fas fa-phone"></i> +94 66 222 2222</li>
+                        <li><i class="fas fa-envelope"></i> info@goviconnect.lk</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Govi Connect - Dambulla Economic Center. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+     
+     <!-- Admin Dashboard -->
+    <div class="admin-dashboard" id="adminDashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <h2>Admin Dashboard</h2>
+                <p>Manage farmers, products, and buyers in the Govi Connect platform</p>
+            </div>
+            
+            <div class="dashboard-nav">
+                <button class="nav-btn active" data-target="farmerManagement">Farmer Management</button>
+                <button class="nav-btn" data-target="productManagement">Product Management</button>
+                <button class="nav-btn" data-target="buyerManagement">Buyer Management</button>
+                <button class="nav-btn" id="logoutBtn">Logout</button>
+            </div>
+            
+            <div class="dashboard-content">
+                <!-- Farmer Management Section -->
+                <div class="dashboard-section active" id="farmerManagement">
+                    <h3>Farmer Management</h3>
+                    <p>Manage registered farmers and their profiles</p>
+                    
+                    <table class="dashboard-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Location</th>
+                                <th>Products</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>F001</td>
+                                <td>Kamal Perera</td>
+                                <td>Dambulla</td>
+                                <td>Vegetables, Fruits</td>
+                                <td>Active</td>
+                                <td>
+                                    <button class="btn btn-primary">Edit</button>
+                                    <button class="btn btn-secondary">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>F002</td>
+                                <td>Sunil Fernando</td>
+                                <td>Matale</td>
+                                <td>Rice, Spices</td>
+                                <td>Active</td>
+                                <td>
+                                    <button class="btn btn-primary">Edit</button>
+                                    <button class="btn btn-secondary">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>F003</td>
+                                <td>Nimal Rathnayake</td>
+                                <td>Kandy</td>
+                                <td>Vegetables</td>
+                                <td>Pending</td>
+                                <td>
+                                    <button class="btn btn-primary">Edit</button>
+                                    <button class="btn btn-secondary">View</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Product Management Section -->
+                <div class="dashboard-section" id="productManagement">
+                    <h3>Product Management</h3>
+                    <p>Manage agricultural products listed on the platform</p>
+                    
+                    <table class="dashboard-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Price (LKR)</th>
+                                <th>Farmer</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>P001</td>
+                                <td>Red Onions</td>
+                                <td>Vegetables</td>
+                                <td>180/kg</td>
+                                <td>Kamal Perera</td>
+                                <td>Available</td>
+                                <td>
+                                    <button class="btn btn-primary">Edit</button>
+                                    <button class="btn btn-secondary">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>P002</td>
+                                <td>Carrots</td>
+                                <td>Vegetables</td>
+                                <td>120/kg</td>
+                                <td>Sunil Fernando</td>
+                                <td>Available</td>
+                                <td>
+                                    <button class="btn btn-primary">Edit</button>
+                                    <button class="btn btn-secondary">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>P003</td>
+                                <td>Potatoes</td>
+                                <td>Vegetables</td>
+                                <td>150/kg</td>
+                                <td>Nimal Rathnayake</td>
+                                <td>Out of Stock</td>
+                                <td>
+                                    <button class="btn btn-primary">Edit</button>
+                                    <button class="btn btn-secondary">View</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Buyer Management Section -->
+                <div class="dashboard-section" id="buyerManagement">
+                    <h3>Buyer Management</h3>
+                    <p>Manage registered buyers and their orders</p>
+                    
+                    <table class="dashboard-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Business Name</th>
+                                <th>Contact Person</th>
+                                <th>Location</th>
+                                <th>Orders</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>B001</td>
+                                <td>Colombo Supermarket</td>
+                                <td>Asanka Silva</td>
+                                <td>Colombo</td>
+                                <td>15</td>
+                                <td>Active</td>
+                                <td>
+                                    <button class="btn btn-primary">Edit</button>
+                                    <button class="btn btn-secondary">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>B002</td>
+                                <td>Kandy Food City</td>
+                                <td>Dilani Perera</td>
+                                <td>Kandy</td>
+                                <td>8</td>
+                                <td>Active</td>
+                                <td>
+                                    <button class="btn btn-primary">Edit</button>
+                                    <button class="btn btn-secondary">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>B003</td>
+                                <td>Gampaha Wholesale</td>
+                                <td>Ruwan Jayasinghe</td>
+                                <td>Gampaha</td>
+                                <td>22</td>
+                                <td>Active</td>
+                                <td>
+                                    <button class="btn btn-primary">Edit</button>
+                                    <button class="btn btn-secondary">View</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <!-- Mobile Menu Script -->
+    <script>
+        // Mobile menu toggle
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const nav = document.querySelector('nav');
+        
+        mobileMenu.addEventListener('click', () => {
+            nav.classList.toggle('active');
+        });
+        
+        // Close mobile menu when clicking on a link
+        const navLinks = document.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                nav.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>

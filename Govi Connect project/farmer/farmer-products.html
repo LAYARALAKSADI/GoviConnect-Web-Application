@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Products - GoviConnect</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="farmer-dashboard">
+    <!-- Farmer Header -->
+    <header class="farmer-header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-tractor"></i>
+                <span>GoviConnect</span>
+            </div>
+            <div class="farmer-info">
+                <span id="welcomeMessage">Welcome!</span>
+                <div class="farmer-avatar">
+                    <img src="" alt="Profile" id="profileImage" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Navigation -->
+    <nav class="dashboard-nav">
+        <div class="nav-container">
+            <h2>FarmerProfileDashboard</h2>
+            <div class="nav-links">
+                <a href="farmer-profile.html" class="nav-link">
+                    <i class="fas fa-user"></i>
+                    My Profile
+                </a>
+                <a href="farmer-products.html" class="nav-link active">
+                    <i class="fas fa-apple-alt"></i>
+                    My Products
+                </a>
+                <a href="farmer-orders.html" class="nav-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    My Orders
+                </a>
+                <a href="#" class="nav-link" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="dashboard-content">
+        <div class="content-header">
+            <h1>My Products</h1>
+            <button class="btn btn-primary" onclick="openAddProductModal()">
+                <i class="fas fa-plus"></i>
+                Add Product
+            </button>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="products-controls">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search products..." id="productSearch">
+            </div>
+            <div class="filter-group">
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="fruit">Fruits</option>
+                    <option value="vegetable">Vegetables</option>
+                    <option value="spice">Spices</option>
+                    <option value="grain">Grains</option>
+                    <option value="other">Other</option>
+                </select>
+                <select id="statusFilter">
+                    <option value="all">All Status</option>
+                    <option value="approved">Approved</option>
+                    <option value="pending">Pending Approval</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid detailed" id="productsGrid">
+            <!-- Products will be loaded dynamically from Firebase -->
+            <div class="empty-state">
+                <i class="fas fa-apple-alt"></i>
+                <h3>No Products Yet</h3>
+                <p>Start by adding your first product to showcase your farm produce.</p>
+                <button class="btn btn-primary" onclick="openAddProductModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Your First Product
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Product Modal -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Product</h2>
+                <span class="close" onclick="closeAddProductModal()">&times;</span>
+            </div>
+            <form class="farmer-form" id="addProductForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="productName">Product Name *</label>
+                        <input type="text" id="productName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productCategory">Category *</label>
+                        <select id="productCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="fruit">Fruit</option>
+                            <option value="vegetable">Vegetable</option>
+                            <option value="spice">Spice</option>
+                            <option value="grain">Grain</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="productQuantity">Quantity *</label>
+                        <input type="number" id="productQuantity" required min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="productUnit">Unit *</label>
+                        <select id="productUnit" required>
+                            <option value="kg">Kilogram (kg)</option>
+                            <option value="g">Gram (g)</option>
+                            <option value="pieces">Pieces</option>
+                            <option value="bunch">Bunch</option>
+                            <option value="pack">Pack</option>
+                            <option value="bag">Bag</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="productPrice">Price (Rs.) *</label>
+                        <input type="number" id="productPrice" step="0.01" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="productPriceUnit">Price Unit</label>
+                        <select id="productPriceUnit">
+                            <option value="kg">per kg</option>
+                            <option value="piece">per piece</option>
+                            <option value="bunch">per bunch</option>
+                            <option value="pack">per pack</option>
+                            <option value="bag">per bag</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="harvestDate">Harvest Date</label>
+                        <input type="date" id="harvestDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="qualityGrade">Quality Grade</label>
+                        <select id="qualityGrade">
+                            <option value="premium">Premium</option>
+                            <option value="A">Grade A</option>
+                            <option value="B">Grade B</option>
+                            <option value="C">Grade C</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="productDescription">Description</label>
+                        <textarea id="productDescription" rows="3" placeholder="Describe your product (quality, freshness, organic status, etc.)"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="productImage">Product Image</label>
+                        <div class="image-upload-container">
+                            <input type="file" id="productImage" accept="image/*" onchange="previewProductImage(this, 'productImagePreview')">
+                            <div class="image-preview" id="productImagePreview">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Click to upload product image</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeAddProductModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div id="editProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Product</h2>
+                <span class="close" onclick="closeEditProductModal()">&times;</span>
+            </div>
+            <form class="farmer-form" id="editProductForm">
+                <input type="hidden" id="editProductId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="editProductName">Product Name *</label>
+                        <input type="text" id="editProductName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductCategory">Category *</label>
+                        <select id="editProductCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="fruit">Fruit</option>
+                            <option value="vegetable">Vegetable</option>
+                            <option value="spice">Spice</option>
+                            <option value="grain">Grain</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductQuantity">Quantity *</label>
+                        <input type="number" id="editProductQuantity" required min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductUnit">Unit *</label>
+                        <select id="editProductUnit" required>
+                            <option value="kg">Kilogram (kg)</option>
+                            <option value="g">Gram (g)</option>
+                            <option value="pieces">Pieces</option>
+                            <option value="bunch">Bunch</option>
+                            <option value="pack">Pack</option>
+                            <option value="bag">Bag</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductPrice">Price (Rs.) *</label>
+                        <input type="number" id="editProductPrice" step="0.01" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductPriceUnit">Price Unit</label>
+                        <select id="editProductPriceUnit">
+                            <option value="kg">per kg</option>
+                            <option value="piece">per piece</option>
+                            <option value="bunch">per bunch</option>
+                            <option value="pack">per pack</option>
+                            <option value="bag">per bag</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editHarvestDate">Harvest Date</label>
+                        <input type="date" id="editHarvestDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="editQualityGrade">Quality Grade</label>
+                        <select id="editQualityGrade">
+                            <option value="premium">Premium</option>
+                            <option value="A">Grade A</option>
+                            <option value="B">Grade B</option>
+                            <option value="C">Grade C</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="editProductDescription">Description</label>
+                        <textarea id="editProductDescription" rows="3" placeholder="Describe your product..."></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="editProductImage">Product Image</label>
+                        <div class="image-upload-container">
+                            <input type="file" id="editProductImage" accept="image/*" onchange="previewProductImage(this, 'editProductImagePreview')">
+                            <div class="image-preview" id="editProductImagePreview">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Click to upload product image</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeEditProductModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase Configuration -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAJBaIq9oElhG0iMbAos0TiWwUQLiADg7g",
+            authDomain: "goviconnect-105c9.firebaseapp.com",
+            projectId: "goviconnect-105c9",
+            storageBucket: "goviconnect-105c9.firebasestorage.app",
+            messagingSenderId: "173017898873",
+            appId: "1:173017898873:web:eb3ad5936aabe5cbc119a8"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        console.log('Firebase connected in products page!');
+    </script>
+
+    <script>
+        // Products page specific functionality
+        let currentProducts = [];
+        let currentUserId = null;
+        let productImageFile = null;
+        let editProductImageFile = null;
+
+        // Check authentication and load products
+        async function initializeProducts() {
+            const user = await checkAuth();
+            
+            if (!user) {
+                window.location.href = 'farmer-login.html';
+                return;
+            }
+            
+            currentUserId = user.uid;
+            
+            // Load farmer name for welcome message
+            const farmerDoc = await db.collection('farmers').doc(currentUserId).get();
+            if (farmerDoc.exists) {
+                const farmerData = farmerDoc.data();
+                document.getElementById('welcomeMessage').textContent = `Welcome, ${farmerData.fullName || 'Farmer'}!`;
+                
+                // Load profile image if available
+                if (farmerData.profileImage) {
+                    const profileImage = document.getElementById('profileImage');
+                    profileImage.src = farmerData.profileImage;
+                    profileImage.style.display = 'block';
+                    profileImage.nextElementSibling.style.display = 'none';
+                }
+            }
+            
+            await loadProducts();
+        }
+
+        function checkAuth() {
+            return new Promise((resolve) => {
+                auth.onAuthStateChanged((user) => {
+                    if (user) {
+                        resolve(user);
+                    } else {
+                        resolve(null);
+                    }
+                });
+            });
+        }
+
+        // FIXED: Load all products regardless of status
+        async function loadProducts() {
+            try {
+                console.log('Loading products for user:', currentUserId);
+                
+                // Get ALL products for this farmer, regardless of status
+                const snapshot = await db.collection('products').get();
+                
+                // Filter products locally by farmerId and include ALL statuses
+                currentProducts = snapshot.docs
+                    .map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }))
+                    .filter(product => product.farmerId === currentUserId)
+                    .sort((a, b) => {
+                        const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+                        const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+                        return dateB - dateA; // newest first
+                    });
+                
+                console.log('All products for farmer (including pending/rejected):', currentProducts);
+                displayProducts(currentProducts);
+                
+            } catch (error) {
+                console.error('Error loading products:', error);
+                
+                // Show user-friendly error message
+                if (error.code === 'failed-precondition') {
+                    alert('Please wait while we set up the database. Try refreshing the page.');
+                } else if (error.code === 'unavailable') {
+                    alert('You are currently offline. Please check your internet connection.');
+                } else {
+                    alert('Error loading products: ' + error.message);
+                }
+                
+                displayProducts([]);
+            }
+        }
+
+        // FIXED: Display all products with status indicators
+        function displayProducts(products) {
+            const productsGrid = document.getElementById('productsGrid');
+            
+            if (products.length === 0) {
+                productsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-apple-alt"></i>
+                        <h3>No Products Found</h3>
+                        <p>You haven't added any products yet, or your products are waiting for admin approval.</p>
+                        <button class="btn btn-primary" onclick="openAddProductModal()">
+                            <i class="fas fa-plus"></i>
+                            Add Your First Product
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            productsGrid.innerHTML = products.map(product => `
+                <div class="product-card detailed" data-product-id="${product.id}" data-status="${product.status || 'pending'}">
+                    <div class="product-header">
+                        <div class="product-image">
+                            ${product.image ? 
+                                `<img src="${product.image}" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">` : 
+                                ''
+                            }
+                            <i class="fas fa-${getProductIcon(product.category)}" style="${product.image ? 'display: none' : 'display: flex'}"></i>
+                        </div>
+                        <div class="product-text">
+                            <h3>${product.name}</h3>
+                            <div class="product-meta">
+                                <span class="product-category">${formatCategory(product.category)}</span>
+                                <span class="status-indicator status-${product.status || 'pending'}">
+                                    ${formatProductStatus(product.status || 'pending')}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-details">
+                        <div class="detail-item">
+                            <label>Quantity:</label>
+                            <span>${product.quantity} ${product.unit}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Price:</label>
+                            <span class="price">Rs. ${product.price} / ${product.priceUnit}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Harvest Date:</label>
+                            <span>${product.harvestDate ? formatDate(product.harvestDate) : 'Not specified'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Quality:</label>
+                            <span>${product.quality || 'Not specified'}</span>
+                        </div>
+                        ${product.description ? `
+                        <div class="detail-item full-width">
+                            <label>Description:</label>
+                            <span>${product.description}</span>
+                        </div>
+                        ` : ''}
+                        ${product.status === 'rejected' && product.rejectionReason ? `
+                        <div class="detail-item full-width">
+                            <label>Rejection Reason:</label>
+                            <span style="color: var(--accent-red);">${product.rejectionReason}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                    <div class="product-actions">
+                        ${product.status !== 'approved' ? `
+                        <button class="btn btn-outline" onclick="editProduct('${product.id}')">
+                            <i class="fas fa-edit"></i>
+                            Edit
+                        </button>
+                        ` : ''}
+                        <button class="btn btn-danger" onclick="deleteProduct('${product.id}')">
+                            <i class="fas fa-trash"></i>
+                            Delete
+                        </button>
+                        ${product.status === 'pending' ? `
+                        <span class="status-note" style="color: var(--warning); font-size: 1.2rem; margin-top: 1rem;">
+                            <i class="fas fa-clock"></i> Waiting for admin approval
+                        </span>
+                        ` : ''}
+                        ${product.status === 'rejected' ? `
+                        <span class="status-note" style="color: var(--accent-red); font-size: 1.2rem; margin-top: 1rem;">
+                            <i class="fas fa-times-circle"></i> Product was rejected
+                        </span>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getProductIcon(category) {
+            const icons = {
+                'fruit': 'apple-alt',
+                'vegetable': 'carrot',
+                'spice': 'leaf',
+                'grain': 'seedling',
+                'other': 'shopping-basket'
+            };
+            return icons[category] || 'shopping-basket';
+        }
+
+        function formatCategory(category) {
+            const categories = {
+                'fruit': 'Fruit',
+                'vegetable': 'Vegetable',
+                'spice': 'Spice',
+                'grain': 'Grain',
+                'other': 'Other'
+            };
+            return categories[category] || category;
+        }
+
+        // FIXED: Format product status for display
+        function formatProductStatus(status) {
+            const statusMap = {
+                'pending': 'Pending Approval',
+                'approved': 'Approved',
+                'rejected': 'Rejected'
+            };
+            return statusMap[status] || status;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // Modal Functions
+        function openAddProductModal() {
+            document.getElementById('addProductModal').style.display = 'block';
+            // Set today's date as default for harvest date
+            document.getElementById('harvestDate').valueAsDate = new Date();
+        }
+
+        function closeAddProductModal() {
+            document.getElementById('addProductModal').style.display = 'none';
+            document.getElementById('addProductForm').reset();
+            productImageFile = null;
+        }
+
+        function openEditProductModal() {
+            document.getElementById('editProductModal').style.display = 'block';
+        }
+
+        function closeEditProductModal() {
+            document.getElementById('editProductModal').style.display = 'none';
+            document.getElementById('editProductForm').reset();
+            editProductImageFile = null;
+        }
+
+        function previewProductImage(input, previewId) {
+            const preview = document.getElementById(previewId);
+            const file = input.files[0];
+            
+            if (file) {
+                // Check file size (max 2MB for Base64)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Image size should be less than 2MB');
+                    input.value = '';
+                    return;
+                }
+                
+                // Check file type
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select an image file');
+                    input.value = '';
+                    return;
+                }
+                
+                if (previewId === 'productImagePreview') {
+                    productImageFile = file;
+                } else {
+                    editProductImageFile = file;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Upload image as Base64
+        async function uploadProductImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const base64String = e.target.result;
+                    resolve(base64String);
+                };
+                
+                reader.onerror = function(error) {
+                    reject(new Error('Error reading image file'));
+                };
+                
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Add Product Form Submission
+        document.getElementById('addProductForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!currentUserId) return;
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            
+            // Show loading
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding Product...';
+            submitBtn.disabled = true;
+            
+            try {
+                let productImageUrl = null;
+                
+                // Upload product image if selected
+                if (productImageFile) {
+                    productImageUrl = await uploadProductImage(productImageFile);
+                }
+                
+                const productData = {
+                    name: document.getElementById('productName').value,
+                    category: document.getElementById('productCategory').value,
+                    quantity: parseInt(document.getElementById('productQuantity').value),
+                    unit: document.getElementById('productUnit').value,
+                    price: parseFloat(document.getElementById('productPrice').value),
+                    priceUnit: document.getElementById('productPriceUnit').value,
+                    harvestDate: document.getElementById('harvestDate').value,
+                    quality: document.getElementById('qualityGrade').value,
+                    description: document.getElementById('productDescription').value,
+                    image: productImageUrl,
+                    farmerId: currentUserId,
+                    status: 'pending', // Waiting for admin approval
+                    isActive: true,
+                    createdAt: new Date().toISOString()
+                };
+                
+                await db.collection('products').add(productData);
+                alert('Product added successfully! It will be visible after admin approval.');
+                closeAddProductModal();
+                await loadProducts(); // Reload products list
+                
+            } catch (error) {
+                console.error('Error adding product:', error);
+                alert('Error adding product: ' + error.message);
+            } finally {
+                // Reset button
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Edit Product Functions
+        async function editProduct(productId) {
+            try {
+                const productDoc = await db.collection('products').doc(productId).get();
+                
+                if (productDoc.exists) {
+                    const product = productDoc.data();
+                    
+                    // Populate edit form
+                    document.getElementById('editProductId').value = productId;
+                    document.getElementById('editProductName').value = product.name || '';
+                    document.getElementById('editProductCategory').value = product.category || '';
+                    document.getElementById('editProductQuantity').value = product.quantity || '';
+                    document.getElementById('editProductUnit').value = product.unit || '';
+                    document.getElementById('editProductPrice').value = product.price || '';
+                    document.getElementById('editProductPriceUnit').value = product.priceUnit || '';
+                    document.getElementById('editHarvestDate').value = product.harvestDate || '';
+                    document.getElementById('editQualityGrade').value = product.quality || '';
+                    document.getElementById('editProductDescription').value = product.description || '';
+                    
+                    // Set image preview
+                    if (product.image) {
+                        document.getElementById('editProductImagePreview').innerHTML = `<img src="${product.image}" alt="Preview">`;
+                    }
+                    
+                    openEditProductModal();
+                }
+            } catch (error) {
+                console.error('Error loading product for edit:', error);
+                alert('Error loading product: ' + error.message);
+            }
+        }
+
+        // Edit Product Form Submission
+        document.getElementById('editProductForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const productId = document.getElementById('editProductId').value;
+            if (!productId) return;
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            
+            // Show loading
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+            submitBtn.disabled = true;
+            
+            try {
+                let productImageUrl = null;
+                
+                // Check if new image was selected
+                const currentProduct = currentProducts.find(p => p.id === productId);
+                productImageUrl = currentProduct?.image || null;
+                
+                if (editProductImageFile) {
+                    productImageUrl = await uploadProductImage(editProductImageFile);
+                }
+                
+                const updatedData = {
+                    name: document.getElementById('editProductName').value,
+                    category: document.getElementById('editProductCategory').value,
+                    quantity: parseInt(document.getElementById('editProductQuantity').value),
+                    unit: document.getElementById('editProductUnit').value,
+                    price: parseFloat(document.getElementById('editProductPrice').value),
+                    priceUnit: document.getElementById('editProductPriceUnit').value,
+                    harvestDate: document.getElementById('editHarvestDate').value,
+                    quality: document.getElementById('editQualityGrade').value,
+                    description: document.getElementById('editProductDescription').value,
+                    image: productImageUrl,
+                    updatedAt: new Date().toISOString(),
+                    status: 'pending' // Reset to pending when edited
+                };
+                
+                await db.collection('products').doc(productId).update(updatedData);
+                alert('Product updated successfully! It will need admin approval again.');
+                closeEditProductModal();
+                await loadProducts(); // Reload products list
+                
+            } catch (error) {
+                console.error('Error updating product:', error);
+                alert('Error updating product: ' + error.message);
+            } finally {
+                // Reset button
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Delete Product
+        async function deleteProduct(productId) {
+            if (confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+                try {
+                    await db.collection('products').doc(productId).delete();
+                    alert('Product deleted successfully!');
+                    await loadProducts(); // Reload products list
+                } catch (error) {
+                    console.error('Error deleting product:', error);
+                    alert('Error deleting product: ' + error.message);
+                }
+            }
+        }
+
+        // FIXED: Search and Filter functionality - Show all products by default
+        document.getElementById('productSearch').addEventListener('input', filterProducts);
+        document.getElementById('categoryFilter').addEventListener('change', filterProducts);
+        document.getElementById('statusFilter').addEventListener('change', filterProducts);
+
+        function filterProducts() {
+            const searchTerm = document.getElementById('productSearch').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            let filteredProducts = currentProducts;
+            
+            // Apply search filter
+            if (searchTerm) {
+                filteredProducts = filteredProducts.filter(product => 
+                    product.name.toLowerCase().includes(searchTerm) ||
+                    (product.description && product.description.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            // Apply category filter
+            if (categoryFilter) {
+                filteredProducts = filteredProducts.filter(product => product.category === categoryFilter);
+            }
+            
+            // Apply status filter
+            if (statusFilter && statusFilter !== 'all') {
+                filteredProducts = filteredProducts.filter(product => product.status === statusFilter);
+            }
+            
+            displayProducts(filteredProducts);
+        }
+
+        // Logout function
+        async function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                try {
+                    await auth.signOut();
+                    window.location.href = 'farmer-login.html';
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    alert('Logout failed: ' + error.message);
+                }
+            }
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(e) {
+            const addModal = document.getElementById('addProductModal');
+            const editModal = document.getElementById('editProductModal');
+            
+            if (e.target === addModal) closeAddProductModal();
+            if (e.target === editModal) closeEditProductModal();
+        });
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeProducts();
+        });
+    </script>
+</body>
+</html>

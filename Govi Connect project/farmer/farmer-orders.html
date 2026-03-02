@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - GoviConnect</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Responsive Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close:hover {
+            opacity: 0.8;
+        }
+
+        .order-detail-view {
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .detail-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .detail-section h3 {
+            margin: 0 0 15px 0;
+            color: #2e7d32;
+            font-size: 1.2rem;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-item label {
+            font-weight: 600;
+            color: #495057;
+            min-width: 120px;
+        }
+
+        .detail-item span {
+            text-align: right;
+            color: #6c757d;
+        }
+
+        .order-item-detail {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .order-item-detail strong {
+            color: #2e7d32;
+            font-size: 1.1rem;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-confirmed { background: #d1ecf1; color: #0c5460; }
+        .status-shipped { background: #d1ecf1; color: #0c5460; }
+        .status-completed { background: #d4edda; color: #155724; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+
+        .payment-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .payment-pending { background: #fff3cd; color: #856404; }
+        .payment-paid { background: #d4edda; color: #155724; }
+        .payment-failed { background: #f8d7da; color: #721c24; }
+        .payment-refunded { background: #e2e3e5; color: #383d41; }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+
+            .modal-header {
+                padding: 15px;
+            }
+
+            .modal-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .order-detail-view {
+                padding: 15px;
+                max-height: 80vh;
+            }
+
+            .detail-section {
+                padding: 12px;
+                margin-bottom: 20px;
+            }
+
+            .detail-item {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+            }
+
+            .detail-item label {
+                min-width: auto;
+                margin-bottom: 5px;
+            }
+
+            .detail-item span {
+                text-align: left;
+                width: 100%;
+            }
+
+            .order-item-detail {
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 98%;
+                margin: 2% auto;
+            }
+
+            .modal-header {
+                padding: 12px;
+            }
+
+            .modal-header h2 {
+                font-size: 1.1rem;
+            }
+
+            .order-detail-view {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body class="farmer-dashboard">
+    <!-- Farmer Header -->
+    <header class="farmer-header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-tractor"></i>
+                <span>GoviConnect</span>
+            </div>
+            <div class="farmer-info">
+                <span id="welcomeMessage">Welcome!</span>
+                <div class="farmer-avatar">
+                    <img src="" alt="Profile" id="profileImage" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Dashboard Navigation -->
+    <nav class="dashboard-nav">
+        <div class="nav-container">
+            <h2>FarmerProfileDashboard</h2>
+            <div class="nav-links">
+                <a href="farmer-profile.html" class="nav-link">
+                    <i class="fas fa-user"></i>
+                    My Profile
+                </a>
+                <a href="farmer-products.html" class="nav-link">
+                    <i class="fas fa-apple-alt"></i>
+                    My Products
+                </a>
+                <a href="farmer-orders.html" class="nav-link active">
+                    <i class="fas fa-shopping-cart"></i>
+                    My Orders
+                </a>
+                <a href="#" class="nav-link" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="dashboard-content">
+        <div class="content-header">
+            <h1>My Orders</h1>
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search orders..." id="orderSearch">
+                </div>
+                <button class="btn btn-outline" onclick="createDemoOrder()">
+                    <i class="fas fa-plus"></i>
+                    Create Demo Order
+                </button>
+            </div>
+        </div>
+
+        <!-- Order Stats -->
+        <div class="profile-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-number" id="pendingOrders">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-number" id="confirmedOrders">0</div>
+                <div class="stat-label">Confirmed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-truck"></i>
+                </div>
+                <div class="stat-number" id="shippedOrders">0</div>
+                <div class="stat-label">Shipped</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-number" id="totalRevenue">Rs. 0</div>
+                <div class="stat-label">Total Revenue</div>
+            </div>
+        </div>
+
+        <section class="orders-section">
+            <h2>Recent Orders</h2>
+            <p class="section-subtitle">Overview of all incoming orders from buyers.</p>
+
+            <div class="orders-table-container">
+                <table class="orders-table" id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Buyer Name</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Total Price</th>
+                            <th>Status</th>
+                            <th>Payment</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Orders will be loaded dynamically from Firebase -->
+                        <tr>
+                            <td colspan="9" style="text-align: center; padding: 4rem;">
+                                <div class="empty-state">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    <h3>No Orders Yet</h3>
+                                    <p>Your orders will appear here once buyers start purchasing your products.</p>
+                                    <button class="btn btn-primary" onclick="createDemoOrder()">
+                                        <i class="fas fa-plus"></i>
+                                        Create Demo Order
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Quick Links -->
+        <section class="quick-links-section">
+            <h2>Quick Links</h2>
+            <div class="quick-links">
+                <a href="farmer-products.html" class="quick-link">
+                    <i class="fas fa-apple-alt"></i>
+                    <span>Manage Products</span>
+                </a>
+                <a href="#" class="quick-link" onclick="viewSalesReport()">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Sales Report</span>
+                </a>
+                <a href="farmer-profile.html" class="quick-link">
+                    <i class="fas fa-user"></i>
+                    <span>My Profile</span>
+                </a>
+                <a href="#" class="quick-link" onclick="contactSupport()">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Get Support</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Order Details Modal -->
+    <div id="orderDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Order Details</h2>
+                <span class="close" onclick="closeOrderDetailModal()">&times;</span>
+            </div>
+            <div class="order-detail-view" id="orderDetailContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Configuration -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAJBaIq9oElhG0iMbAos0TiWwUQLiADg7g",
+            authDomain: "goviconnect-105c9.firebaseapp.com",
+            projectId: "goviconnect-105c9",
+            storageBucket: "goviconnect-105c9.firebasestorage.app",
+            messagingSenderId: "173017898873",
+            appId: "1:173017898873:web:eb3ad5936aabe5cbc119a8"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        console.log('Firebase connected in orders page!');
+    </script>
+
+    <script>
+        // Orders page specific functionality
+        let currentUserId = null;
+        let currentOrders = [];
+
+        // Check authentication and load orders
+        async function initializeOrders() {
+            const user = await checkAuth();
+            
+            if (!user) {
+                window.location.href = 'farmer-login.html';
+                return;
+            }
+            
+            currentUserId = user.uid;
+            
+            // Load farmer name for welcome message
+            const farmerDoc = await db.collection('farmers').doc(currentUserId).get();
+            if (farmerDoc.exists) {
+                const farmerData = farmerDoc.data();
+                document.getElementById('welcomeMessage').textContent = `Welcome, ${farmerData.fullName || 'Farmer'}!`;
+                
+                // Load profile image if available
+                if (farmerData.profileImage) {
+                    const profileImage = document.getElementById('profileImage');
+                    profileImage.src = farmerData.profileImage;
+                    profileImage.style.display = 'block';
+                    profileImage.nextElementSibling.style.display = 'none';
+                }
+            }
+            
+            await loadOrders();
+        }
+
+        function checkAuth() {
+            return new Promise((resolve) => {
+                auth.onAuthStateChanged((user) => {
+                    if (user) {
+                        resolve(user);
+                    } else {
+                        resolve(null);
+                    }
+                });
+            });
+        }
+
+        async function loadOrders() {
+            try {
+                console.log('Loading orders for farmer:', currentUserId);
+                
+                // Get ALL orders and filter client-side for now
+                const snapshot = await db.collection('orders').get();
+                
+                // Filter orders that contain this farmer's products
+                currentOrders = snapshot.docs
+                    .map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }))
+                    .filter(order => {
+                        // Check if any item in the order belongs to this farmer
+                        if (order.items && order.items.length > 0) {
+                            return order.items.some(item => item.farmerId === currentUserId);
+                        }
+                        // For old orders without items array, check farmerId field
+                        return order.farmerId === currentUserId;
+                    })
+                    .sort((a, b) => {
+                        const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+                        const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+                        return dateB - dateA; // newest first
+                    });
+                
+                console.log('Filtered orders for farmer:', currentOrders);
+                displayOrders(currentOrders);
+                updateOrderStats(currentOrders);
+                
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                displayOrders([]);
+            }
+        }
+
+        function displayOrders(orders) {
+            const ordersTable = document.getElementById('ordersTable');
+            const tbody = ordersTable.querySelector('tbody');
+            
+            if (orders.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 4rem;">
+                            <div class="empty-state">
+                                <i class="fas fa-shopping-cart"></i>
+                                <h3>No Orders Yet</h3>
+                                <p>Your orders will appear here once buyers start purchasing your products.</p>
+                                <button class="btn btn-primary" onclick="createDemoOrder()">
+                                    <i class="fas fa-plus"></i>
+                                    Create Demo Order
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = orders.map(order => {
+                // Get the first item that belongs to this farmer
+                const farmerItem = order.items ? 
+                    order.items.find(item => item.farmerId === currentUserId) : 
+                    order;
+                
+                const productName = farmerItem?.name || order.productName || 'Product';
+                const quantity = farmerItem?.quantity || order.quantity || 0;
+                const unit = farmerItem?.unit || order.unit || 'kg';
+                const price = farmerItem?.price || order.pricePerUnit || 0;
+                const totalPrice = quantity * price;
+                const buyerName = order.buyerName || 'Customer';
+                
+                return `
+                    <tr>
+                        <td><strong>${order.orderId || order.id.slice(-6)}</strong></td>
+                        <td>${formatDate(order.createdAt)}</td>
+                        <td>${buyerName}</td>
+                        <td>${productName}</td>
+                        <td>${quantity} ${unit}</td>
+                        <td><strong>Rs. ${totalPrice.toLocaleString()}</strong></td>
+                        <td>
+                            <span class="status-badge status-${order.status || 'pending'}">
+                                ${formatOrderStatus(order.status || 'pending')}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="payment-status payment-${order.paymentStatus || 'pending'}">
+                                ${formatPaymentStatus(order.paymentStatus || 'pending')}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="table-actions">
+                                <button class="btn-icon" title="View Order" onclick="viewOrderDetails('${order.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                ${(order.status || 'pending') === 'pending' ? `
+                                <button class="btn-icon" title="Confirm Order" onclick="updateOrderStatus('${order.id}', 'confirmed')">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                ` : ''}
+                                ${(order.status || 'pending') === 'confirmed' ? `
+                                <button class="btn-icon" title="Mark as Shipped" onclick="updateOrderStatus('${order.id}', 'shipped')">
+                                    <i class="fas fa-truck"></i>
+                                </button>
+                                ` : ''}
+                                ${(order.status || 'pending') === 'shipped' ? `
+                                <button class="btn-icon" title="Mark as Completed" onclick="updateOrderStatus('${order.id}', 'completed')">
+                                    <i class="fas fa-flag-checkered"></i>
+                                </button>
+                                ` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateOrderStats(orders) {
+            const pendingOrders = orders.filter(order => order.status === 'pending').length;
+            const confirmedOrders = orders.filter(order => order.status === 'confirmed').length;
+            const shippedOrders = orders.filter(order => order.status === 'shipped').length;
+            const totalRevenue = orders.reduce((total, order) => {
+                const farmerItem = order.items ? 
+                    order.items.find(item => item.farmerId === currentUserId) : 
+                    order;
+                const quantity = farmerItem?.quantity || order.quantity || 0;
+                const price = farmerItem?.price || order.pricePerUnit || 0;
+                return total + (quantity * price);
+            }, 0);
+            
+            document.getElementById('pendingOrders').textContent = pendingOrders;
+            document.getElementById('confirmedOrders').textContent = confirmedOrders;
+            document.getElementById('shippedOrders').textContent = shippedOrders;
+            document.getElementById('totalRevenue').textContent = `Rs. ${totalRevenue.toLocaleString()}`;
+        }
+
+        function formatOrderStatus(status) {
+            const statusMap = {
+                'pending': 'Pending',
+                'confirmed': 'Confirmed',
+                'shipped': 'Shipped',
+                'completed': 'Completed',
+                'cancelled': 'Cancelled'
+            };
+            return statusMap[status] || status;
+        }
+
+        function formatPaymentStatus(status) {
+            const statusMap = {
+                'pending': 'Pending',
+                'paid': 'Paid',
+                'failed': 'Failed',
+                'refunded': 'Refunded'
+            };
+            return statusMap[status] || status;
+        }
+
+        function formatDate(dateValue) {
+            try {
+                if (!dateValue) {
+                    return 'Date not set';
+                }
+                
+                let date;
+                
+                // Handle Firestore Timestamp
+                if (dateValue.toDate) {
+                    date = dateValue.toDate();
+                } 
+                // Handle string date
+                else if (typeof dateValue === 'string') {
+                    date = new Date(dateValue);
+                }
+                // Handle Date object
+                else if (dateValue instanceof Date) {
+                    date = dateValue;
+                }
+                // Fallback
+                else {
+                    date = new Date(dateValue);
+                }
+                
+                // Check if date is valid
+                if (isNaN(date.getTime())) {
+                    return 'Invalid Date';
+                }
+                
+                return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+            } catch (error) {
+                console.error('Error formatting date:', error, dateValue);
+                return 'Date Error';
+            }
+        }
+
+        // Create a demo order for testing
+        async function createDemoOrder() {
+            if (!currentUserId) return;
+            
+            try {
+                // Get farmer's approved products to use in demo order
+                const productsSnapshot = await db.collection('products')
+                    .where('farmerId', '==', currentUserId)
+                    .where('status', '==', 'approved')
+                    .limit(1)
+                    .get();
+                
+                if (productsSnapshot.empty) {
+                    alert('You need at least one approved product to create demo orders. Please add and get products approved first.');
+                    return;
+                }
+                
+                const product = productsSnapshot.docs[0].data();
+                const productId = productsSnapshot.docs[0].id;
+                
+                const demoOrder = {
+                    farmerId: currentUserId,
+                    productId: productId,
+                    productName: product.name,
+                    quantity: Math.floor(Math.random() * 10) + 1, // Random quantity 1-10
+                    unit: product.unit,
+                    pricePerUnit: product.price,
+                    totalPrice: (Math.floor(Math.random() * 10) + 1) * product.price,
+                    buyerName: 'Demo Customer',
+                    buyerPhone: '+94 77 123 4567',
+                    buyerAddress: 'Colombo, Sri Lanka',
+                    status: 'pending',
+                    paymentStatus: 'pending',
+                    createdAt: new Date().toISOString(),
+                    orderId: 'ORD' + Date.now().toString().slice(-6)
+                };
+                
+                await db.collection('orders').add(demoOrder);
+                alert('Demo order created successfully!');
+                await loadOrders(); // Reload orders list
+                
+            } catch (error) {
+                console.error('Error creating demo order:', error);
+                alert('Error creating demo order: ' + error.message);
+            }
+        }
+
+        // Update order status
+        async function updateOrderStatus(orderId, newStatus) {
+            try {
+                const updateData = {
+                    status: newStatus,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                // If marking as completed, set payment as paid
+                if (newStatus === 'completed') {
+                    updateData.paymentStatus = 'paid';
+                }
+                
+                await db.collection('orders').doc(orderId).update(updateData);
+                alert(`Order status updated to ${formatOrderStatus(newStatus)}`);
+                await loadOrders(); // Reload orders list
+                
+            } catch (error) {
+                console.error('Error updating order status:', error);
+                alert('Error updating order status: ' + error.message);
+            }
+        }
+
+        // View order details - FIXED RESPONSIVE VERSION
+        async function viewOrderDetails(orderId) {
+            try {
+                const orderDoc = await db.collection('orders').doc(orderId).get();
+                
+                if (orderDoc.exists) {
+                    const order = orderDoc.data();
+                    
+                    // Get items that belong to this farmer
+                    const farmerItems = order.items ? 
+                        order.items.filter(item => item.farmerId === currentUserId) : 
+                        [order];
+                    
+                    const itemsHTML = farmerItems.map(item => `
+                        <div class="order-item-detail">
+                            <strong>${item.name}</strong><br>
+                            <div class="detail-item">
+                                <label>Quantity:</label>
+                                <span>${item.quantity} ${item.unit || 'kg'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Price:</label>
+                                <span>Rs. ${item.price} per ${item.unit || 'kg'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Total:</label>
+                                <span><strong>Rs. ${(item.quantity * item.price).toFixed(2)}</strong></span>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    const detailContent = `
+                        <div class="order-details">
+                            <div class="detail-section">
+                                <h3>Order Information</h3>
+                                <div class="details-grid">
+                                    <div class="detail-item">
+                                        <label>Order ID:</label>
+                                        <span>${order.orderId || orderId.slice(-6)}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Order Date:</label>
+                                        <span>${formatDate(order.createdAt)}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Status:</label>
+                                        <span class="status-badge status-${order.status || 'pending'}">${formatOrderStatus(order.status || 'pending')}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Payment:</label>
+                                        <span class="payment-status payment-${order.paymentStatus || 'pending'}">${formatPaymentStatus(order.paymentStatus || 'pending')}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h3>Product Details</h3>
+                                ${itemsHTML}
+                            </div>
+                            
+                            <div class="detail-section">
+                                <h3>Buyer Information</h3>
+                                <div class="details-grid">
+                                    <div class="detail-item">
+                                        <label>Name:</label>
+                                        <span>${order.buyerName || 'Customer'}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Email:</label>
+                                        <span>${order.buyerEmail || 'Not provided'}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <label>Order Total:</label>
+                                        <span><strong>Rs. ${order.totalAmount?.toFixed(2) || '0.00'}</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.getElementById('orderDetailContent').innerHTML = detailContent;
+                    document.getElementById('orderDetailModal').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading order details:', error);
+                alert('Error loading order details: ' + error.message);
+            }
+        }
+
+        function closeOrderDetailModal() {
+            document.getElementById('orderDetailModal').style.display = 'none';
+        }
+
+        // Search functionality
+        document.getElementById('orderSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredOrders = currentOrders.filter(order => 
+                (order.productName && order.productName.toLowerCase().includes(searchTerm)) ||
+                (order.buyerName && order.buyerName.toLowerCase().includes(searchTerm)) ||
+                (order.orderId && order.orderId.toLowerCase().includes(searchTerm)) ||
+                (order.items && order.items.some(item => 
+                    item.name && item.name.toLowerCase().includes(searchTerm)
+                ))
+            );
+            displayOrders(filteredOrders);
+        });
+
+        // Additional functions
+        function viewSalesReport() {
+            alert('Sales report feature will be implemented soon!');
+        }
+
+        function contactSupport() {
+            alert('Contact support at: support@goviconnect.lk\nPhone: +94 11 234 5678');
+        }
+
+        // Logout function
+        async function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                try {
+                    await auth.signOut();
+                    window.location.href = 'farmer-login.html';
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    alert('Logout failed: ' + error.message);
+                }
+            }
+        }
+
+        // Close modal when clicking outside or pressing ESC
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('orderDetailModal');
+            if (e.target === modal) {
+                closeOrderDetailModal();
+            }
+        });
+
+        window.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeOrderDetailModal();
+            }
+        });
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeOrders();
+        });
+    </script>
+</body>
+</html>
