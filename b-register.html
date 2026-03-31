@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register as Buyer - Agricultural Economic Center</title>
+    <link rel="stylesheet" href="css/buyer-styles.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-form">
+            <h2>🌱 Create Buyer Account</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" required placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" required placeholder="Enter your phone number">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="nic">NIC Number</label>
+                    <input type="text" id="nic" required placeholder="Enter your NIC number">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required minlength="6" placeholder="Create a password (min. 6 characters)">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" required placeholder="Confirm your password">
+                </div>
+                <button type="submit" class="btn-primary">Create Account</button>
+            </form>
+            <div class="auth-links">
+                <p>Already have an account? <a href="buyer-login.html">Login here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAJBaIq9oElhG0iMbAos0TiWwUQLiADg7g",
+            authDomain: "goviconnect-105c9.firebasestorage.app",
+            projectId: "goviconnect-105c9",
+            storageBucket: "goviconnect-105c9.firebasestorage.app",
+            messagingSenderId: "173017898873",
+            appId: "1:173017898873:web:eb3ad5936aabe5cbc119a8"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        console.log('✅ Firebase initialized in buyer-register.html');
+
+        // Registration form handler
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('fullName').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const nic = document.getElementById('nic').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const registerBtn = e.target.querySelector('.btn-primary');
+
+            if (password !== confirmPassword) {
+                alert("Passwords don't match!");
+                return;
+            }
+
+            if (password.length < 6) {
+                alert("Password must be at least 6 characters long!");
+                return;
+            }
+
+            try {
+                registerBtn.textContent = 'Creating Account...';
+                registerBtn.disabled = true;
+
+                console.log('Starting registration for:', email);
+
+                // Create user in Firebase Auth
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                console.log('✅ User created in Auth:', user.uid);
+
+                // Create user document in Firestore
+                await db.collection('users').doc(user.uid).set({
+                    fullName: fullName,
+                    phone: phone,
+                    email: email,
+                    nic: nic,
+                    userType: "buyer",
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: "active"
+                });
+
+                console.log('✅ User document created in Firestore');
+
+                alert("Registration successful! Welcome to GoviConnect!");
+                window.location.href = "buyer-dashboard.html";
+
+            } catch (error) {
+                console.error("❌ Registration error:", error);
+                
+                let errorMessage = "Registration failed: ";
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        errorMessage += "Email is already registered.";
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage += "Invalid email address.";
+                        break;
+                    case 'auth/weak-password':
+                        errorMessage += "Password is too weak.";
+                        break;
+                    case 'auth/network-request-failed':
+                        errorMessage += "Network error. Please check your connection.";
+                        break;
+                    default:
+                        errorMessage += error.message;
+                }
+                
+                alert(errorMessage);
+            } finally {
+                registerBtn.textContent = 'Create Account';
+                registerBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
